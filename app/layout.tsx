@@ -19,7 +19,7 @@ export default function RootLayout({
     <ClerkProvider>
       <html lang="en">
         <body className={inter.className}>
-          <main className='max-w-2xl mx-auto my-0 px-2 pt-4'>
+          <main className='max-w-2xl mx-auto my-0 px-2 pt-4 relative'>
             {children}
           </main>
         </body>
