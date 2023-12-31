@@ -45,7 +45,7 @@ export default async function Home() {
               items?.map((coin) => (
                 <div key={coin.id} className="border-b-2 border-slate-100 mt-2">
                   <div className="flex justify-between">
-                    <div className='text-sm w-32 grid items-center'><div>{coin.name} - {coin.total_amount || 0}</div></div>
+                    <div className='text-sm w-32 grid items-center'><div>{coin.name} - {formatNumber(coin.total_amount || 0, 2)}</div></div>
                   </div>
                   <div className="flex text-sm rounded pb-2">
                     <Link href={`/crypto/${coin.code}`} className='w-1/2 inline-block'>

@@ -268,7 +268,9 @@ export const CryptoModal = (props: ITransactionModalProps) => {
                       <FormLabel className="flex aligns-center gap-2">
                         Platform
                       </FormLabel>
-                      <Select defaultValue={field.value}>
+                      <Select defaultValue={field.value} onValueChange={(val) => {
+                        form.setValue('platform', val as EPlatform);
+                      }}>
                         <FormControl>
                           <SelectTrigger className="capitalize">
                             <SelectValue placeholder="Select platform" className="capitalize" />
