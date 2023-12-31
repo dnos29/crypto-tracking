@@ -2,14 +2,15 @@ import { headers } from '@/helpers/header-helper';
 import { formatNumber } from '@/helpers/number-helper';
 import supabase from '@/utils/supabase';
 import { currentUser } from '@clerk/nextjs'
-import Image from 'next/image'
 import Link from 'next/link';
+import { CoinModal } from '@/components/coins/coin-modal';
+import { CoinDeleteModal } from '@/components/coins/delete-modal';
 
 export default async function Home() {
   const user = await currentUser();
-  const {data: coins} = await supabase.from('coins').select().eq('userId', user?.id);
+  const { data: coins } = await supabase.from('coins').select().eq('userId', user?.id);
   const allSymbols = coins?.map((coin) => (coin?.code.toUpperCase()));
-  const {data: marketQuote} = await fetch(`https://pro-api.coinmarketcap.com/v2/cryptocurrency/quotes/latest?symbol=${allSymbols?.join(',')}&convert=USD`, {
+  const { data: marketQuote } = await fetch(`https://pro-api.coinmarketcap.com/v2/cryptocurrency/quotes/latest?symbol=${allSymbols?.join(',')}&convert=USD`, {
     mode: 'cors',
     headers,
   }).then((res) => res.json());
@@ -37,35 +38,40 @@ export default async function Home() {
         <span className='text-2xl font-bold'>{formatNumber(totalEstVal, 2)}</span><sup> USDT</sup>
       </p>
       <div className='mt-2'>
-        <p className=''>Assets</p>
+        <p className=''>Assets <span className=''><CoinModal userId={user?.id || ''} /></span></p>
         <div className="list">
           <div className='w-full'>
-            <div className="flex text-xs text-gray-400">
-              <div className='w-32'>Name</div>
-              <div className='w-1/2 text-right'>Avg/Market price</div>
-              <div className='w-1/2 text-right'>Total invested/Est val</div>
-            </div>
             {
               items?.map((coin) => (
-                <Link key={coin.id} href={`/crypto/${coin.code}`}>
-                  <div  className="flex text-sm my-2 rounded bg-gray-50 px-2 py-1">
-                    <div className='w-32 grid items-center'><div>{coin.name} - {coin.total_amount || 0}</div></div>
-                    <div className='w-1/2 text-right'>
-                        <p>{formatNumber(coin.avg_price) || '-'}</p>
-                        <p>{formatNumber(coin.marketPrice)}</p>
-                    </div>
-                    <div className='w-1/2 text-right'>
-                        <p>{formatNumber(coin.total_invested, 2) || 0} / {formatNumber(coin.estVal, 2)}</p>
-                        <p className={coin.isProfit ? `text-teal-500` : 'text-red-500'}>
-                          {formatNumber(coin.profit, 2)} / {formatNumber(coin.profitPercentage, 2)}%</p>
+                <div key={coin.id} className="border-b-2 border-slate-100 mt-2">
+                  <div className="flex justify-between">
+                    <div className='text-sm w-32 grid items-center'><div>{coin.name} - {coin.total_amount || 0}</div></div>
+                  </div>
+                  <div className="flex text-sm rounded pb-2">
+                    <Link href={`/crypto/${coin.code}`} className='w-1/2 inline-block'>
+                      <p className="text-gray-400 text-xs">Avg/Market price</p>
+                      <p>{formatNumber(coin.avg_price) || '-'}</p>
+                      <p>{formatNumber(coin.marketPrice)}</p>
+                    </Link>
+                    <Link href={`/crypto/${coin.code}`} className='w-1/2 inline-block'>
+
+                      <p className="text-gray-400 text-xs">Total investes/Est val</p>
+                      <p>{formatNumber(coin.total_invested, 2) || 0} / {formatNumber(coin.estVal, 2)}</p>
+                      <p className={coin.isProfit ? `text-teal-500` : 'text-red-500'}>
+                        {formatNumber(coin.profit, 2)} / {formatNumber(coin.profitPercentage, 2)}%</p>
+                    </Link>
+                    <div className="grid gap-1 text-right">
+                      {/* <p className="text-gray-400 text-xs">Actions</p> */}
+                      <CoinModal coin={coin} userId={user?.id} />
+                      <CoinDeleteModal id={coin.id} userId={user?.id} />
                     </div>
                   </div>
-                </Link>
+                </div>
               ))
             }
           </div>
         </div>
       </div>
-    </div> 
+    </div>
   )
 }

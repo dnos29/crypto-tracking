@@ -51,7 +51,7 @@ export const CryptoModal = (props: ITransactionModalProps) => {
     }
   })
   const onSubmit = async (values: z.infer<typeof transactionSchema>) => {
-    if (!coin.userId) {
+    if (!coin?.userId) {
       alert('user not found');
       return;
     }
@@ -64,7 +64,7 @@ export const CryptoModal = (props: ITransactionModalProps) => {
       total: Number(values.total),
       coin: coin.id || 0,
       userId: coin.userId || '',
-      ...(transaction?.id && {id: transaction?.id}),
+      ...(transaction?.id && { id: transaction?.id }),
     }
     if (transaction) {
       try {
@@ -77,7 +77,6 @@ export const CryptoModal = (props: ITransactionModalProps) => {
         );
         await supabase.from('coins').update(updateCoin).eq('id', coin?.id);
         setOpenModal(false);
-        form.reset();
         router.refresh();
       } catch (error) {
         console.log(error);
@@ -91,7 +90,6 @@ export const CryptoModal = (props: ITransactionModalProps) => {
         setSummary(
           `Total amount: ${updateCoin.total_amount} | Avg price: ${updateCoin.avg_price} | Total invested: ${updateCoin.total_invested}`
         );
-        form.reset();
         router.refresh();
         setOpenModal(false);
       } catch (error) {
@@ -105,11 +103,24 @@ export const CryptoModal = (props: ITransactionModalProps) => {
         <DialogTrigger asChild>
           {
             transaction?.id ? (
-              <button className="bg-blue-200 rounded py-1 px-2" onClick={() => setOpenModal(true)}>
+              <button className="w-5 h-5 text-sm bg-blue-200 rounded" onClick={() => setOpenModal(true)}>
                 &#9998;
               </button>
-            ) : 
-            (<Button size={'xs'} onClick={() => setOpenModal(true)}>New tnx</Button>)
+            ) :
+              (
+                <div
+                  className="text-sm text-gray-400 text-right cursor-pointer"
+                  onClick={() => {
+                    form.reset();
+                    setOpenModal(true)
+                  }}
+                >
+                  <button className="bg-teal-500 rounded-full w-5 h-5 text-white inline-block">
+                    <span className="leading-3">&#43;</span>
+                  </button>
+                  <span> Add tnx</span>
+                </div>
+              )
           }
         </DialogTrigger>
         {openModal && (
@@ -205,7 +216,7 @@ export const CryptoModal = (props: ITransactionModalProps) => {
                           const val = e.target.value;
                           const isBuy = form.getValues('type') === ETransactionType.BUY;
                           form.setValue('amount', val);
-                          if(form.getValues('price_at')){
+                          if (form.getValues('price_at')) {
                             const total = multipe([val, form.getValues('price_at')]);
                             form.setValue('total', (isBuy ? total : 0 - total).toString());
                           }
@@ -226,7 +237,7 @@ export const CryptoModal = (props: ITransactionModalProps) => {
                           const val = e.target.value;
                           const isBuy = form.getValues('type') === ETransactionType.BUY;
                           form.setValue('price_at', val);
-                          if(form.getValues('amount')){
+                          if (form.getValues('amount')) {
                             const total = multipe([val, form.getValues('amount') || '0']);
                             form.setValue('total', (isBuy ? total : 0 - total).toString());
                           }
@@ -260,11 +271,11 @@ export const CryptoModal = (props: ITransactionModalProps) => {
                       <Select defaultValue={field.value}>
                         <FormControl>
                           <SelectTrigger className="capitalize">
-                            <SelectValue placeholder="Select platform" className="capitalize"  />
+                            <SelectValue placeholder="Select platform" className="capitalize" />
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
-                        <SelectItem
+                          <SelectItem
                             value={EPlatform.Okx}
                             className="capitalize"
                           >
@@ -300,7 +311,6 @@ export const CryptoModal = (props: ITransactionModalProps) => {
                         className="ml-2"
                         disabled={form.formState.isSubmitting}
                         onClick={() => {
-                          form.reset();
                           setOpenModal(false);
                         }}>
                         Close

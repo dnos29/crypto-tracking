@@ -8,21 +8,18 @@ import supabase from "@/utils/supabase";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
-interface ICryptoDeleteModalProps{
+interface ICoinDeleteModalProps{
   id: number,
-  transactions: ITransaction[],
-  coin: ICoin,
+  userId?: string,
 }
 
-export const CryptoDeleteModal = (props: ICryptoDeleteModalProps) => {
-  const { id, transactions, coin } = props;
+export const CoinDeleteModal = (props: ICoinDeleteModalProps) => {
+  const { id, userId } = props;
   const [openModal, setOpenModal] = useState(false);
   const router = useRouter();
   const deleteTransaction = async ()=> {
     try {
-      await supabase.from('transactions').delete().eq('id', id);
-      const updateCoin = averageCoinPrice(coin, transactions.filter(tnx => tnx.id !== id));
-      await supabase.from('coins').update(updateCoin).eq('id', coin.id);
+      await supabase.from('coins').delete().eq('id', id).eq('userId', userId);
       router.refresh();
       setOpenModal(false);
     } catch (error) {
@@ -33,7 +30,7 @@ export const CryptoDeleteModal = (props: ICryptoDeleteModalProps) => {
     <Dialog>
       <DialogTrigger asChild>
         <button
-          className="w-5 h-5 text-sm bg-red-200 rounded ml-2"
+          className="w-5 h-5 text-sm bg-red-200 rounded"
           onClick={() => {
             setOpenModal(true);
           }}
@@ -44,9 +41,9 @@ export const CryptoDeleteModal = (props: ICryptoDeleteModalProps) => {
         openModal && (
           <DialogContent className="sm:max-w-[425px]">
             <DialogHeader>
-              <DialogTitle>Delete</DialogTitle>
+              <DialogTitle>Delete coin</DialogTitle>
               <DialogDescription>
-                Are you sure to want delete this transaction?
+                Are you sure to want delete this coin? Please make sure that you already delete all transactions?
               </DialogDescription>
             </DialogHeader>
             <div className="grid gap-4 py-4">
