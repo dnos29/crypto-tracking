@@ -27,15 +27,15 @@ export default async function Home() {
       profitPercentage: (estVal - coin.total_invested) / coin.total_invested * 100 || 0,
     };
   });
-  const totalEstVal = items?.reduce((acc, coin) => acc + coin.estVal, 0);
+  const totalProfitVal = items?.reduce((acc, coin) => acc + coin.profit, 0);
   return (
     <div className='mt-4'>
       Hi there!
       <p className='text-xs	mt-4'>
-        Est total value
+        Est profit value
       </p>
       <p className=''>
-        <span className='text-2xl font-bold'>{formatNumber(totalEstVal, 2)}</span><sup> USDT</sup>
+        <span className='text-2xl font-bold'>{formatNumber(totalProfitVal, 2)}</span><sup> USDT</sup>
       </p>
       <div className='mt-2'>
         <p className=''>Assets <span className=''><CoinModal userId={user?.id || ''} /></span></p>
@@ -55,10 +55,21 @@ export default async function Home() {
                     </Link>
                     <Link href={`/crypto/${coin.code}`} className='w-1/2 inline-block'>
 
-                      <p className="text-gray-400 text-xs">Total investes/Est val</p>
+                      <p className="text-gray-400 text-xs">Total invested/Est val</p>
                       <p>{formatNumber(coin.total_invested, 2) || 0} / {formatNumber(coin.estVal, 2)}</p>
                       <p className={coin.isProfit ? `text-teal-500` : 'text-red-500'}>
-                        {formatNumber(coin.profit, 2)} / {formatNumber(coin.profitPercentage, 2)}%</p>
+                        {
+                          coin.total_invested < 1 ? (
+                            <>
+                              {formatNumber(coin.profit, 2)} / -
+                            </>
+                          ) : (
+                            <>
+                              {formatNumber(coin.profit, 2)} / {formatNumber(coin.profitPercentage, 2)}%
+                            </>
+                          )
+                        }
+                        </p>
                     </Link>
                     <div className="grid gap-1 text-right">
                       {/* <p className="text-gray-400 text-xs">Actions</p> */}

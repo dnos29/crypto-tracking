@@ -161,6 +161,7 @@ export const CryptoModal = (props: ITransactionModalProps) => {
                             selected={field.value}
                             onSelect={field.onChange}
                             initialFocus
+                            defaultMonth={field.value|| undefined}
                           />
                         </PopoverContent>
                       </Popover>
