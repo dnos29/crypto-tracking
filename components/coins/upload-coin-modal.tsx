@@ -36,7 +36,7 @@ export const UploadCoinModal = (props: IUploadCoinModalProps) => {
     if(!file){
       alert('Please select a file');
     }
-    Papa.parse(file, {
+    Papa.parse(file || '', {
       header: true,
       skipEmptyLines: true,
       complete: function(results: any) {

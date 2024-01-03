@@ -38,7 +38,7 @@ export const UploadTransactionModal = (props: IUploadTransactionModalProps) => {
     if (!file) {
       alert('Please select a file');
     }
-    Papa.parse(file, {
+    Papa.parse(file || '', {
       header: true,
       skipEmptyLines: true,
       complete: async function (results: any) {
