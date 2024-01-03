@@ -10,7 +10,7 @@ import { UploadTransactionModal } from './crypto/[id]/upload-transaction-modal';
 
 export default async function Home() {
   const user = await currentUser();
-  const { data: coins } = await supabase.from('coins').select().eq('userId', user?.id);
+  const { data: coins } = await supabase.from('coins').select().eq('userid', user?.id);
   const allSymbols = coins?.map((coin) => (coin?.code.toUpperCase()));
   const { data: marketQuote } = await fetch(`https://pro-api.coinmarketcap.com/v2/cryptocurrency/quotes/latest?symbol=${allSymbols?.join(',')}&convert=USD`, {
     mode: 'cors',

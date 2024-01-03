@@ -52,7 +52,7 @@ export const UploadCoinModal = (props: IUploadCoinModalProps) => {
             console.log('Importing', item);
             const { data: coin } = await supabase.from('coins')
               .select()
-              .eq('userId', userId).eq('code', item.code)
+              .eq('userid', userId).eq('code', item.code)
               .limit(1)
               .single();
             if(true){

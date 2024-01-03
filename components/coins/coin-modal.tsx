@@ -42,7 +42,7 @@ export const CoinModal = (props: ICoinModalProps) => {
         await supabase.from('coins').update({
           name: values.name,
           code: values.code,
-        }).eq('id', coin?.id).eq('userId', userId);
+        }).eq('id', coin?.id).eq('userid', userId);
         router.refresh();
         setOpenModal(false);
       } catch (error) {

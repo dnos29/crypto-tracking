@@ -15,9 +15,9 @@ const headers = new Headers({
 
 export default async function Page({ params }: { params: { id: string } }) {
   const user = await currentUser();
-  const { data: coin } = await supabase.from('coins').select().eq('userId', user?.id).eq('code', params.id?.toUpperCase()).limit(1).single();
+  const { data: coin } = await supabase.from('coins').select().eq('userid', user?.id).eq('code', params.id?.toUpperCase()).limit(1).single();
   const { data: transactions } = await supabase.from('transactions').select()
-    .eq('userId', user?.id)
+    .eq('userid', user?.id)
     .eq('coin', coin?.id)
     .order('tnx_date', { ascending: true });
   const totalAmount = transactions?.reduce((accumulator, tnx: ITransaction) => accumulator + tnx.amount, 0);

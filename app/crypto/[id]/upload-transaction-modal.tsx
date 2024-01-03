@@ -58,14 +58,14 @@ export const UploadTransactionModal = (props: IUploadTransactionModalProps) => {
             if (!coinId) {
               const { data: coins } = await supabase.from('coins')
                 .select()
-                .eq('code', item.coin).eq('userId', userId)
+                .eq('code', item.coin).eq('userid', userId)
                 .limit(1);
               // neu coin da ton tai trong db
               if (coins?.[0]) {
                 coinId = coins?.[0]?.id;
                 cacheCoin[coinCode] = coins?.[0];
                 const { data: tnxs } = await supabase.from('transactions')
-                  .select().eq('userId', userId).eq('coin', coinId);
+                  .select().eq('userid', userId).eq('coin', coinId);
                 existedTransactions = tnxs as ITransaction[];
               } else {
                 const {data: coins, error} = await supabase.from('coins')

@@ -70,7 +70,7 @@ export const CryptoModal = (props: ITransactionModalProps) => {
       try {
         await supabase.from('transactions')
           .update(newTransaction)
-          .eq('userId', transaction.userId).eq('id', transaction.id);
+          .eq('userid', transaction.userId).eq('id', transaction.id);
         const updateCoin = averageCoinPrice(
           coin,
           transactions.filter((item) => item.id !== transaction.id).concat(newTransaction),
