@@ -51,7 +51,7 @@ export const CryptoModal = (props: ITransactionModalProps) => {
     }
   })
   const onSubmit = async (values: z.infer<typeof transactionSchema>) => {
-    if (!coin?.userId) {
+    if (!coin?.userid) {
       alert('user not found');
       return;
     }
@@ -63,14 +63,14 @@ export const CryptoModal = (props: ITransactionModalProps) => {
       price_at: Number(values.price_at),
       total: Number(values.total),
       coin: coin.id || 0,
-      userId: coin.userId || '',
+      userid: coin.userid || '',
       ...(transaction?.id && { id: transaction?.id }),
     }
     if (transaction) {
       try {
         await supabase.from('transactions')
           .update(newTransaction)
-          .eq('userid', transaction.userId).eq('id', transaction.id);
+          .eq('userid', transaction.userid).eq('id', transaction.id);
         const updateCoin = averageCoinPrice(
           coin,
           transactions.filter((item) => item.id !== transaction.id).concat(newTransaction),

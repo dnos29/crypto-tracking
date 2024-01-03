@@ -10,11 +10,11 @@ import supabase from "@/utils/supabase";
 import { ICoinCsv } from "@/interfaces";
 
 interface IUploadCoinModalProps {
-  userId?: string,
+  userid?: string,
 }
 
 export const UploadCoinModal = (props: IUploadCoinModalProps) => {
-  const {userId} = props;
+  const {userid} = props;
   const [openModal, setOpenModal] = useState(false);
   const [file, setFile] = useState<File>();
   const router = useRouter();
@@ -52,13 +52,14 @@ export const UploadCoinModal = (props: IUploadCoinModalProps) => {
             console.log('Importing', item);
             const { data: coin } = await supabase.from('coins')
               .select()
-              .eq('userid', userId).eq('code', item.code)
+              .eq('userid', userid).eq('code', item.code)
               .limit(1)
               .single();
-            if(true){
+            if(!coin?.id){
               const result = await supabase.from('coins').insert({
-                ...item,
-                userId, 
+                name: item.name.trim(),
+                code: item.code.trim(),
+                userid, 
               });
               if(result?.data){
                 successed = successed + 1;

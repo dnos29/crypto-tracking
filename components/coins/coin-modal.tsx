@@ -18,10 +18,10 @@ const coinSchema = z.object({
 
 interface ICoinModalProps {
   coin?: ICoin,
-  userId?: string,
+  userid?: string,
 }
 export const CoinModal = (props: ICoinModalProps) => {
-  const { coin, userId } = props;
+  const { coin, userid } = props;
   const [openModal, setOpenModal] = useState(false);
   const router = useRouter();
   const form = useForm<z.infer<typeof coinSchema>>({
@@ -32,7 +32,7 @@ export const CoinModal = (props: ICoinModalProps) => {
     }
   });
   const onSubmit = async (values: z.infer<typeof coinSchema>) => {
-    if (!userId) {
+    if (!userid) {
       alert('User not found')
       return;
     }
@@ -40,9 +40,9 @@ export const CoinModal = (props: ICoinModalProps) => {
       // new
       try {
         await supabase.from('coins').update({
-          name: values.name,
-          code: values.code,
-        }).eq('id', coin?.id).eq('userid', userId);
+          name: values.name.trim(),
+          code: values.code.trim(),
+        }).eq('id', coin?.id).eq('userid', userid);
         router.refresh();
         setOpenModal(false);
       } catch (error) {
@@ -52,9 +52,9 @@ export const CoinModal = (props: ICoinModalProps) => {
       // new
       try {
         await supabase.from('coins').insert({
-          name: values.name,
-          code: values.code,
-          userId,
+          name: values.name.trim(),
+          code: values.code.trim(),
+          userid,
         });
         router.refresh();
         setOpenModal(false);

@@ -12,11 +12,11 @@ import { convertStrToPlatFrom } from "@/helpers/string-helper";
 import { averageCoinPrice } from "@/helpers/calculater-helper";
 
 interface IUploadTransactionModalProps {
-  userId?: string,
+  userid?: string,
 }
 
 export const UploadTransactionModal = (props: IUploadTransactionModalProps) => {
-  const { userId } = props;
+  const { userid } = props;
   const [openModal, setOpenModal] = useState(false);
   const [file, setFile] = useState<File>();
   const router = useRouter();
@@ -50,7 +50,7 @@ export const UploadTransactionModal = (props: IUploadTransactionModalProps) => {
         let successed = 0;
         setLoading(true);
         for (const item of data) {
-          const coinCode = item.coin.toUpperCase();
+          const coinCode = item.coin.trim().toUpperCase();
           let coinId = cacheCoin[coinCode]?.id;
           let existedTransactions: ITransaction[] = [];
           let newTransaction: ITransaction;
@@ -58,33 +58,31 @@ export const UploadTransactionModal = (props: IUploadTransactionModalProps) => {
             if (!coinId) {
               const { data: coins } = await supabase.from('coins')
                 .select()
-                .eq('code', item.coin).eq('userid', userId)
+                .eq('code', item.coin).eq('userid', userid)
                 .limit(1);
               // neu coin da ton tai trong db
               if (coins?.[0]) {
                 coinId = coins?.[0]?.id;
                 cacheCoin[coinCode] = coins?.[0];
                 const { data: tnxs } = await supabase.from('transactions')
-                  .select().eq('userid', userId).eq('coin', coinId);
+                  .select().eq('userid', userid).eq('coin', coinId);
                 existedTransactions = tnxs as ITransaction[];
               } else {
                 const {data: coins, error} = await supabase.from('coins')
-                  .insert({ name: coinCode, code: coinCode, userId })
+                  .insert({ name: coinCode, code: coinCode, userid })
                   .select();
-                  console.log('coins: ', coins);
                 coinId = coins?.[0].id;
                 cacheCoin[coinCode] = coins?.[0];
               }
             }
-            console.log('')
             // default is buy
             newTransaction = {
               type: ETransactionType.BUY,
               amount: Math.abs(Number(item.amount)),
-              tnx_date: new Date(item.tnx_date).toISOString(),
+              tnx_date: item.tnx_date ? new Date(item.tnx_date).toISOString() : new Date().toISOString(),
               price_at: Math.abs(Number(item.price_at)),
               total: Number(item.amount) * Number(item.price_at),
-              userId: userId || '',
+              userid: userid || '',
               platform: convertStrToPlatFrom(item.platform),
               coin: coinId || 0,
             }
@@ -106,6 +104,7 @@ export const UploadTransactionModal = (props: IUploadTransactionModalProps) => {
           // save to object: coin.code, coin.id
           // create tnx
         }
+        router.refresh();
         alert(`${successed}/${data.length} have been imported.`);
         console.log(`${successed}/${data.length} have been imported.`)
         setLoading(true);

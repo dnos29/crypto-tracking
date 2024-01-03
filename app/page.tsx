@@ -10,15 +10,19 @@ import { UploadTransactionModal } from './crypto/[id]/upload-transaction-modal';
 
 export default async function Home() {
   const user = await currentUser();
-  const { data: coins } = await supabase.from('coins').select().eq('userid', user?.id);
+  const { data: coins } = await supabase.from('coins').select().eq('userid', user?.id).order('name', { ascending: true });;
   const allSymbols = coins?.map((coin) => (coin?.code.toUpperCase()));
   const { data: marketQuote } = await fetch(`https://pro-api.coinmarketcap.com/v2/cryptocurrency/quotes/latest?symbol=${allSymbols?.join(',')}&convert=USD`, {
     mode: 'cors',
     headers,
-  }).then((res) => res.json());
+  }).then((res) => res.json()).catch(err => {
+    console.log(err);
+  });
+  
   const items = coins?.map((coin) => {
     const marketPrice = marketQuote?.[coin.code.toUpperCase()]?.[0]?.quote?.USD?.price;
     const estVal = marketPrice * (coin.total_amount || 0);
+    
     return {
       ...coin,
       marketPrice,
@@ -42,9 +46,9 @@ export default async function Home() {
       <div className='mt-2'>
         <div className='flex gap-2'>
           Assets
-          <div><CoinModal userId={user?.id || ''} /></div>
-          <div className='text-white'><UploadCoinModal userId={user?.id || ''} /></div>
-          <div className='text-white'><UploadTransactionModal userId={user?.id || ''} /></div>
+          <div><CoinModal userid={user?.id || ''} /></div>
+          <div className='text-white'><UploadCoinModal userid={user?.id || ''} /></div>
+          <div className='text-white'><UploadTransactionModal userid={user?.id || ''} /></div>
         </div>
         <div className="list">
           <div className='w-full'>
@@ -80,8 +84,8 @@ export default async function Home() {
                     </Link>
                     <div className="grid gap-1 text-right">
                       {/* <p className="text-gray-400 text-xs">Actions</p> */}
-                      <CoinModal coin={coin} userId={user?.id} />
-                      <CoinDeleteModal id={coin.id} userId={user?.id} />
+                      <CoinModal coin={coin} userid={user?.id} />
+                      <CoinDeleteModal id={coin.id} userid={user?.id} />
                     </div>
                   </div>
                 </div>

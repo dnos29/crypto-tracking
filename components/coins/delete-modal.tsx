@@ -8,16 +8,16 @@ import { useState } from "react";
 
 interface ICoinDeleteModalProps{
   id: number,
-  userId?: string,
+  userid?: string,
 }
 
 export const CoinDeleteModal = (props: ICoinDeleteModalProps) => {
-  const { id, userId } = props;
+  const { id, userid } = props;
   const [openModal, setOpenModal] = useState(false);
   const router = useRouter();
   const deleteTransaction = async ()=> {
     try {
-      await supabase.from('coins').delete().eq('id', id).eq('userid', userId);
+      await supabase.from('coins').delete().eq('id', id).eq('userid', userid);
       router.refresh();
       setOpenModal(false);
     } catch (error) {

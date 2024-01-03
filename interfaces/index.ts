@@ -12,7 +12,7 @@ export interface ITransaction {
   total: number,
   platform: EPlatform,
   coin: number,
-  userId: string,
+  userid: string,
 }
 export interface ITransactionCsv {
   coin: string,
@@ -34,7 +34,7 @@ export interface ICoin {
   total_amount: number,
   avg_price: number,
   total_invested: number,
-  userId: string,
+  userid: string,
 }
 
 export enum EPlatform {
