@@ -2,10 +2,8 @@ import { formatDate } from "@/helpers/time-helper";
 import supabase from "@/utils/supabase"
 import { currentUser } from '@clerk/nextjs'
 import Link from "next/link";
-import { ITransaction, TPlatformColor, ETransactionType } from '../../../interfaces';
+import { ITransaction, ETransactionType } from '../../../interfaces';
 import { CryptoModal } from "./modal";
-import { averageCoinPrice } from "@/helpers/calculater-helper";
-import { useRouter } from "next/navigation";
 import { CryptoDeleteModal } from "./delete-modal";
 import { formatNumber } from "@/helpers/number-helper";
 export const revalidate = 0
@@ -17,12 +15,11 @@ const headers = new Headers({
 
 export default async function Page({ params }: { params: { id: string } }) {
   const user = await currentUser();
-  // const router = useRouter();
   const { data: coin } = await supabase.from('coins').select().eq('userId', user?.id).eq('code', params.id?.toUpperCase()).limit(1).single();
   const { data: transactions } = await supabase.from('transactions').select()
     .eq('userId', user?.id)
     .eq('coin', coin?.id)
-    .order('created_at', { ascending: true });
+    .order('tnx_date', { ascending: true });
   const totalAmount = transactions?.reduce((accumulator, tnx: ITransaction) => accumulator + tnx.amount, 0);
   const totalInvested = transactions?.reduce((accumulator, tnx: ITransaction) => accumulator + tnx.total, 0);
   const isThaTroi = totalInvested < 1;
@@ -80,7 +77,7 @@ export default async function Page({ params }: { params: { id: string } }) {
                     {tnx.type}
                   </span>
                   <span className={
-                    `py-px px-1 rounded-sm inline-block capitalize text-xs bg-opacity-50 font-medium bg-yellow-500 ml-2 text-white`}>
+                    `py-px px-1 rounded-sm inline-block capitalize text-xs bg-opacity-50 font-medium bg-slate-500 ml-2 text-white`}>
                     {tnx.platform.charAt(0)}
                   </span>
                   <span className="text-xs text-gray-400 ml-2">{formatDate(tnx.tnx_date)}</span>

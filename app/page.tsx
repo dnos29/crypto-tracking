@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { CoinModal } from '@/components/coins/coin-modal';
 import { CoinDeleteModal } from '@/components/coins/delete-modal';
 import { UploadCoinModal } from '@/components/coins/upload-coin-modal';
+import { UploadTransactionModal } from './crypto/[id]/upload-transaction-modal';
 
 export default async function Home() {
   const user = await currentUser();
@@ -43,6 +44,7 @@ export default async function Home() {
           Assets
           <div><CoinModal userId={user?.id || ''} /></div>
           <div className='text-white'><UploadCoinModal userId={user?.id || ''} /></div>
+          <div className='text-white'><UploadTransactionModal userId={user?.id || ''} /></div>
         </div>
         <div className="list">
           <div className='w-full'>

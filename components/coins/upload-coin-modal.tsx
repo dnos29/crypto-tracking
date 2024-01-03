@@ -69,6 +69,7 @@ export const UploadCoinModal = (props: IUploadCoinModalProps) => {
           }
           console.log('idx:', idx, '-data.length:', data.length)
           if(idx === (data.length -1)){
+            router.refresh();
             alert(`${successed}/${data.length} have been imported.`);
             setLoading(true);
             setOpenModal(false);
@@ -82,13 +83,13 @@ export const UploadCoinModal = (props: IUploadCoinModalProps) => {
     <Dialog>
       <DialogTrigger asChild>
         <button
-          className="w-5 h-5 text-sm bg-red-200 rounded"
+          className="px-2 text-sm bg-red-200 rounded"
           onClick={() => {
             setOpenModal(true);
             setLoading(false);
           }}
         >
-          &#8613;
+          &#8613; Coins
         </button>
       </DialogTrigger>
       {

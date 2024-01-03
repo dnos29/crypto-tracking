@@ -1,6 +1,7 @@
 export enum ETransactionType {
   BUY = 'buy',
   SELL = 'sell',
+  HOLDING = 'holding',
 }
 export interface ITransaction {
   id?: number,
@@ -13,6 +14,15 @@ export interface ITransaction {
   coin: number,
   userId: string,
 }
+export interface ITransactionCsv {
+  coin: string,
+  type: string,
+  platform: string,
+  tnx_date: string,
+  amount: string,
+  price_at: string,
+}
+
 export interface ICoinCsv {
   name: string,
   code: string,
