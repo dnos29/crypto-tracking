@@ -5,6 +5,7 @@ import { currentUser } from '@clerk/nextjs'
 import Link from 'next/link';
 import { CoinModal } from '@/components/coins/coin-modal';
 import { CoinDeleteModal } from '@/components/coins/delete-modal';
+import { UploadCoinModal } from '@/components/coins/upload-coin-modal';
 
 export default async function Home() {
   const user = await currentUser();
@@ -38,7 +39,11 @@ export default async function Home() {
         <span className='text-2xl font-bold'>{formatNumber(totalProfitVal, 2)}</span><sup> USDT</sup>
       </p>
       <div className='mt-2'>
-        <p className=''>Assets <span className=''><CoinModal userId={user?.id || ''} /></span></p>
+        <div className='flex gap-2'>
+          Assets
+          <div><CoinModal userId={user?.id || ''} /></div>
+          <div className='text-white'><UploadCoinModal userId={user?.id || ''} /></div>
+        </div>
         <div className="list">
           <div className='w-full'>
             {

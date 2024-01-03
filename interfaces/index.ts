@@ -13,7 +13,10 @@ export interface ITransaction {
   coin: number,
   userId: string,
 }
-
+export interface ICoinCsv {
+  name: string,
+  code: string,
+}
 export interface ICoin {
   id?: number,
   name: string,

@@ -2,8 +2,6 @@
 
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { averageCoinPrice } from "@/helpers/calculater-helper";
-import { ICoin, ITransaction } from "@/interfaces";
 import supabase from "@/utils/supabase";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
