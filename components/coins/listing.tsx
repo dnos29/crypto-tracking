@@ -1,16 +1,13 @@
 'use client';
-import { cmcHeaders, supabaseHeaders } from '@/helpers/header-helper';
-import { ICoin, ICoinDashboard, ITransaction } from '@/interfaces';
-import { useQuery, useIsFetching } from '@tanstack/react-query';
+import { ICoinDashboard } from '@/interfaces';
 import { CoinModal } from './coin-modal';
 import { formatNumber } from '@/helpers/number-helper';
 import Link from 'next/link';
 import { CoinDeleteModal } from './delete-modal';
 import { UploadCoinModal } from './upload-coin-modal';
 import { UploadTransactionModal } from '@/app/crypto/[id]/upload-transaction-modal';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Input } from '../ui/input';
-import { Button } from '../ui/button';
 import { profitToTextColor } from '@/helpers/string-helper';
 
 interface ICoinListingProps {
@@ -70,11 +67,10 @@ export const CoinListing = (props: ICoinListingProps) => {
       }
     }, 500);
   }
-  // useEffect(() => {
-  //   const filterItems = setTimeout(() => {
 
-  //   }, 5000);
-  // }, [searchTerm]);
+  useEffect(() => {
+    filterItems(searchTerm, sortBy);
+  }, [items]);
 
   return (
     <>

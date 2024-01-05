@@ -13,6 +13,10 @@ export const multipe = (items: string[]): number => {
   return result;
 }
 
+export const divide = (dividend: string, divisor: string): number => {
+  return (Number(dividend) / Number(divisor));
+}
+
 export const averageCoinPrice = (coin: ICoin, transactions: ITransaction[]): ICoin => {
   const total_amount = transactions.reduce((acc, transaction) => acc + transaction.amount, 0);
   const total_invested = transactions.reduce((acc, transaction) => acc + transaction.total, 0);

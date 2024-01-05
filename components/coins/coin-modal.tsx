@@ -10,10 +10,14 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import supabase from "@/utils/supabase";
 import { useRouter } from "next/navigation";
+import { divide } from "@/helpers/calculater-helper";
 
 const coinSchema = z.object({
   name: z.string().toUpperCase().min(1),
   code: z.string().toUpperCase().min(1),
+  total_amount: z.string().min(1),
+  avg_price: z.string().min(1),
+  total_invested: z.string().min(1),
 });
 
 interface ICoinModalProps {
@@ -29,6 +33,9 @@ export const CoinModal = (props: ICoinModalProps) => {
     defaultValues: {
       name: coin?.name || '',
       code: coin?.code || '',
+      total_amount: coin?.total_amount?.toString() || '',
+      avg_price: coin?.avg_price.toString() || '',
+      total_invested: coin?.total_invested?.toString() || '',
     }
   });
   const onSubmit = async (values: z.infer<typeof coinSchema>) => {
@@ -36,13 +43,18 @@ export const CoinModal = (props: ICoinModalProps) => {
       alert('User not found')
       return;
     }
+    const newCoin = {
+      name: values.name.trim(),
+      code: values.code.trim(),
+      total_invested: Number(values.total_invested || 0),
+      total_amount: Number(values.total_amount || 0),
+      avg_price: Number(values.avg_price || 0),
+    };
     if (coin?.id) {
-      // new
+      // update
       try {
-        await supabase.from('coins').update({
-          name: values.name.trim(),
-          code: values.code.trim(),
-        }).eq('id', coin?.id).eq('userid', userid);
+        await supabase.from('coins').update(newCoin)
+          .eq('id', coin?.id).eq('userid', userid);
         router.refresh();
         setOpenModal(false);
       } catch (error) {
@@ -52,8 +64,7 @@ export const CoinModal = (props: ICoinModalProps) => {
       // new
       try {
         await supabase.from('coins').insert({
-          name: values.name.trim(),
-          code: values.code.trim(),
+         ...newCoin,
           userid,
         });
         router.refresh();
@@ -126,6 +137,67 @@ export const CoinModal = (props: ICoinModalProps) => {
                             form.setValue('code', e.target.value.toUpperCase())
                           }}
                           />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="total_invested"
+                    render={({ field }) => (
+                      <FormItem className="mt-2">
+                        <FormLabel>Total invested</FormLabel>
+                        <FormControl>
+                          <Input placeholder="Enter total invested" {...field} onChange={(e) => {
+                            const val = e.target.value;
+                            form.setValue('total_invested', val);
+                            if (form.getValues('total_amount')) {
+                              const avg_price = divide(
+                                val,
+                                form.getValues('total_amount'),
+                              );
+                              form.setValue('avg_price', avg_price.toString());
+                            }
+                          }}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="total_amount"
+                    render={({ field }) => (
+                      <FormItem className="mt-2">
+                        <FormLabel>Total amount</FormLabel>
+                        <FormControl>
+                          <Input placeholder="Enter total amount" {...field} onChange={(e) => {
+                            const val = e.target.value;
+                            form.setValue('total_amount', val);
+                            if (form.getValues('total_invested')) {
+                              const avg_price = divide(
+                                form.getValues('total_invested'),
+                                val,
+                              );
+                              form.setValue('avg_price', avg_price.toString());
+                            }
+                          }}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="avg_price"
+                    render={({ field }) => (
+                      <FormItem className="mt-2">
+                        <FormLabel>Average price</FormLabel>
+                        <FormControl>
+                          <Input type="number" placeholder="Enter average price" {...field} disabled />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
