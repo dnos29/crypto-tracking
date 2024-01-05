@@ -135,13 +135,6 @@ export const CoinListing = (props: ICoinListingProps) => {
                     </div>
                     <div className="flex text-sm rounded pb-2">
                       <Link href={`/crypto/${coin.code}`} className='w-1/2 inline-block'>
-                        <p className="text-gray-400 text-xs">Avg/Market price</p>
-                        <p className={`${(coin.avg_price === 0 && coin.profit > 0) && 'text-teal-500'}`}>
-                          {(coin.avg_price === 0 && coin.profit > 0) ? 'G': formatNumber(coin.avg_price) || '-'}
-                        </p>
-                        <p>{formatNumber(coin.marketPrice)}</p>
-                      </Link>
-                      <Link href={`/crypto/${coin.code}`} className='w-1/2 inline-block'>
 
                         <p className="text-gray-400 text-xs">Total invested/Est val</p>
                         <p>
@@ -161,6 +154,13 @@ export const CoinListing = (props: ICoinListingProps) => {
                             )
                           }
                         </p>
+                      </Link>
+                      <Link href={`/crypto/${coin.code}`} className='w-1/2 inline-block'>
+                        <p className="text-gray-400 text-xs">Avg/Market price</p>
+                        <p className={`${(coin.avg_price === 0 && coin.profit > 0) && 'text-teal-500'}`}>
+                          {(coin.avg_price === 0 && coin.profit > 0) ? 'G': formatNumber(coin.avg_price) || '-'}
+                        </p>
+                        <p>{formatNumber(coin.marketPrice)}</p>
                       </Link>
                       <div className="grid gap-1 text-right">
                         {/* <p className="text-gray-400 text-xs">Actions</p> */}
