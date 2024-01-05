@@ -100,13 +100,13 @@ export const CoinListing = (props: ICoinListingProps) => {
         </p>
         <div className='mt-2'>
           <p className='text-xs text-gray-400'>Assets</p>
-          <div className='flex gap-2'>
+          <div className='flex flex-wrap gap-2'>
             <div><CoinModal userid={userid || ''} /></div>
             <div><UploadCoinModal userid={userid || ''} /></div>
             <div><UploadTransactionModal userid={userid || ''} /></div>
           </div>
           <p className='text-xs text-gray-400'>Sort by</p>
-          <div className="flex gap-2">
+          <div className="flex flex-wrap gap-2">
             <div className=''>
               <button
                 className=" px-2 text-sm bg-blue-200 rounded"
