@@ -155,7 +155,7 @@ export const UploadTransactionModal = (props: IUploadTransactionModalProps) => {
                   target="_blank"
                   className="text-teal-500"
                 >
-                  Download the coins template here
+                  Download the transactions template here
                 </a>
               </p>
               <form onSubmit={onSubmit} className="w-full space-y-2">
