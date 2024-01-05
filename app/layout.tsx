@@ -21,7 +21,7 @@ export default function RootLayout({
       <html lang="en">
         <body className={inter.className}>
           <TanstackProvider>
-            <main className='max-w-2xl mx-auto my-0 px-2 pt-4 relative'>
+            <main className='max-w-2xl mx-auto my-0 px-2 py-4 relative'>
               {children}
             </main>
           </TanstackProvider>

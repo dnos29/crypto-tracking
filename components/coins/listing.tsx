@@ -9,6 +9,7 @@ import { UploadTransactionModal } from '@/app/crypto/[id]/upload-transaction-mod
 import { useEffect, useState } from 'react';
 import { Input } from '../ui/input';
 import { profitToTextColor } from '@/helpers/string-helper';
+import { UserButton } from "@clerk/clerk-react";
 
 interface ICoinListingProps {
   userid?: string,
@@ -74,8 +75,11 @@ export const CoinListing = (props: ICoinListingProps) => {
 
   return (
     <>
-      <div className='mt-4'>
-        Hi there!
+      <div className=''>
+        <div className="flex gap-2 items-center">
+          <UserButton />
+          <p>Hi there!</p> 
+        </div>
         <p className='text-xs	mt-4'>
           Est total/profit value (USDT)
         </p>
