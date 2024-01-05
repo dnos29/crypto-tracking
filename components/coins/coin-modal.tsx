@@ -80,7 +80,7 @@ export const CoinModal = (props: ICoinModalProps) => {
               </button>
             ) : (
               <button
-                className="text-sm font-semibold bg-blue-200 rounded py-1 px-2 leading-3"
+                className="text-sm bg-blue-200 rounded py-1 px-2 leading-3"
                 onClick={() => {
                   form.reset();
                   setOpenModal(true);

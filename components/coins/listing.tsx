@@ -25,6 +25,7 @@ export const CoinListing = (props: ICoinListingProps) => {
   const { userid, items } = props;
   const [dashboardItems, setDashboardItems] = useState(items || []);
   const totalProfitVal = items?.reduce((acc, coin) => acc + coin.profit, 0) || 0;
+  const totalEstVal = items?.reduce((acc, coin) => acc + coin.estVal, 0) || 0;
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     const term = e?.target?.value;
     setSearchTerm(term);
@@ -80,23 +81,25 @@ export const CoinListing = (props: ICoinListingProps) => {
       <div className='mt-4'>
         Hi there!
         <p className='text-xs	mt-4'>
-          Est profit value
+          Est total/profit value (USDT)
         </p>
-        <p className=''>
-          <span className='text-2xl font-bold'>{formatNumber(totalProfitVal, 2)}</span><sup> USDT</sup>
+        <p className={`${profitToTextColor(totalProfitVal)}`}>
+          <span className='text-2xl font-bold'>{formatNumber(totalEstVal, 2)}</span>
+          <span className='text-2xl'> - </span>
+          <span className={`text-2xl font-bold`}>{formatNumber(totalProfitVal, 2)}</span>
         </p>
         <div className='mt-2'>
           <div className='flex gap-2'>
-            Assets
+          <span className='text-sm'>Assets</span>
             <div><CoinModal userid={userid || ''} /></div>
             <div><UploadCoinModal userid={userid || ''} /></div>
             <div><UploadTransactionModal userid={userid || ''} /></div>
           </div>
           <div className="flex gap-2 mt-2">
-            Sort by: 
+            <span className='text-sm'>Sort by</span>
             <div className=''>
               <button
-                className=" px-2 text-sm font-semibold bg-blue-200 rounded"
+                className=" px-2 text-sm bg-blue-200 rounded"
                 onClick={() => handleSort('name')}
               >
                 Name {sortBy?.name == 'desc' && (<span className='text-sm'>&#9650;</span>)} {sortBy?.name == 'asc' && (<span className='text-sm'>&#9660;</span>)}
@@ -104,7 +107,7 @@ export const CoinListing = (props: ICoinListingProps) => {
             </div>
             <div className=''>
               <button
-                className=" px-2 text-sm font-semibold bg-blue-200 rounded"
+                className=" px-2 text-sm bg-blue-200 rounded"
                 onClick={() => handleSort('profit')}
               >
                 Profit {sortBy?.profit == 'desc' && (<span className='text-sm'>&#9650;</span>)} {sortBy?.profit == 'asc' && (<span className='text-sm'>&#9660;</span>)}
@@ -112,7 +115,7 @@ export const CoinListing = (props: ICoinListingProps) => {
             </div>
             <div className=''>
               <button
-                className=" px-2 text-sm font-semibold bg-blue-200 rounded"
+                className=" px-2 text-sm bg-blue-200 rounded"
                 onClick={() => handleSort('profitPercentage')}
               >
                 Percentage {sortBy?.profitPercentage == 'desc' && (<span className='text-sm'>&#9650;</span>)} {sortBy?.profitPercentage == 'asc' && (<span className='text-sm'>&#9660;</span>)}
@@ -128,7 +131,7 @@ export const CoinListing = (props: ICoinListingProps) => {
                 dashboardItems?.map((coin: any) => (
                   <div key={coin.id} className="border-b-2 border-slate-100 mt-2">
                     <div className="flex justify-between">
-                      <div className='text-sm w-32 grid items-center'><div>{coin.name} - {formatNumber(coin.total_amount || 0, 2)}</div></div>
+                      <div className='text-sm w-32 grid items-center font-medium'><div>{coin.name} - {formatNumber(coin.total_amount || 0, 2)}</div></div>
                     </div>
                     <div className="flex text-sm rounded pb-2">
                       <Link href={`/crypto/${coin.code}`} className='w-1/2 inline-block'>

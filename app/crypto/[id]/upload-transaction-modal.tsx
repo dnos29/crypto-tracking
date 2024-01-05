@@ -132,7 +132,7 @@ export const UploadTransactionModal = (props: IUploadTransactionModalProps) => {
     <Dialog>
       <DialogTrigger asChild>
         <button
-          className=" px-2 font-semibold text-sm bg-blue-200 rounded"
+          className=" px-2 text-sm bg-blue-200 rounded"
           onClick={() => {
             setOpenModal(true);
             setLoading(false);
