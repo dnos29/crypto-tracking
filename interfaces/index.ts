@@ -26,6 +26,8 @@ export interface ITransactionCsv {
 export interface ICoinCsv {
   name: string,
   code: string,
+  total_invested: string,
+  total_amount: string,
 }
 export interface ICoin {
   id?: number,

@@ -21,11 +21,12 @@ export const UploadTransactionModal = (props: IUploadTransactionModalProps) => {
   const [file, setFile] = useState<File>();
   const router = useRouter();
   const [loading, setLoading] = useState(false);
-  const cacheCoin: { [key: string]:
-    {coin: ICoin, transactions: ITransaction[]}
+  const cacheCoin: {
+    [key: string]:
+    { coin: ICoin, transactions: ITransaction[] }
   } = {};
   const successedIds: number[] = [];
-  const failedIdxs: {[key: string]: string}[] = [];
+  const failedIdxs: { [key: string]: string }[] = [];
   let idx = -1;
   const handleOnChangeFile = (event: React.ChangeEvent<HTMLInputElement>) => {
     const input = event.target as HTMLInputElement;
@@ -60,7 +61,7 @@ export const UploadTransactionModal = (props: IUploadTransactionModalProps) => {
           const coinCode = item.coin.trim().toUpperCase();
           let coinId = cacheCoin[coinCode]?.coin?.id;
           let newTransaction: ITransaction;
-          
+
           try {
             if (!coinId) {
               const { data: coins } = await supabase.from('coins')
@@ -70,17 +71,17 @@ export const UploadTransactionModal = (props: IUploadTransactionModalProps) => {
               // neu coin da ton tai trong db
               if (coins?.[0]) {
                 coinId = coins?.[0]?.id;
-                cacheCoin[coinCode] = {coin: coins?.[0], transactions: []};
+                cacheCoin[coinCode] = { coin: coins?.[0], transactions: [] };
                 const { data: tnxs } = await supabase.from('transactions')
                   .select().eq('userid', userid).eq('coin', coinId);
                 console.log('tnxs:', tnxs);
                 cacheCoin[coinCode].transactions = tnxs as ITransaction[];
               } else {
-                const {data: coins, error} = await supabase.from('coins')
+                const { data: coins, error } = await supabase.from('coins')
                   .insert({ name: coinCode, code: coinCode, userid })
                   .select();
                 coinId = coins?.[0].id;
-                cacheCoin[coinCode] = {coin: coins?.[0], transactions: []};
+                cacheCoin[coinCode] = { coin: coins?.[0], transactions: [] };
               }
             }
             // default is buy
@@ -124,7 +125,7 @@ export const UploadTransactionModal = (props: IUploadTransactionModalProps) => {
         setFile(undefined);
         console.log('successedIds:', successedIds);
         console.log('failedIdxs:', failedIdxs);
-        
+
       },
     });
   }
@@ -146,6 +147,17 @@ export const UploadTransactionModal = (props: IUploadTransactionModalProps) => {
           <DialogContent className="sm:max-w-[425px]">
             <DialogHeader>
               <DialogTitle>Upload transactions</DialogTitle>
+              <p className="text-sm text-grey-200">
+                Please upload .csv file to import transactions and coins.
+                <br></br>
+                <a
+                  href="https://drive.google.com/file/d/10aRGw8wr4dDE-SD_OppwHCRbu_AeO4Pp/view?usp=sharing"
+                  target="_blank"
+                  className="text-teal-500"
+                >
+                  Download the coins template here
+                </a>
+              </p>
               <form onSubmit={onSubmit} className="w-full space-y-2">
                 <Input
                   type="file"

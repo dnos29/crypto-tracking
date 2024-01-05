@@ -14,6 +14,9 @@ export const multipe = (items: string[]): number => {
 }
 
 export const divide = (dividend: string, divisor: string): number => {
+  if(Number(divisor) === 0){
+    return 0;
+  }
   return (Number(dividend) / Number(divisor));
 }
 

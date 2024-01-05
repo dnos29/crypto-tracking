@@ -8,6 +8,7 @@ import { Input } from "../ui/input";
 import Papa from "papaparse";
 import supabase from "@/utils/supabase";
 import { ICoinCsv } from "@/interfaces";
+import { divide } from "@/helpers/calculater-helper";
 
 interface IUploadCoinModalProps {
   userid?: string,
@@ -50,18 +51,30 @@ export const UploadCoinModal = (props: IUploadCoinModalProps) => {
         data.map(async (item: ICoinCsv, idx: number) => {
           try {
             console.log('Importing', item);
-            const { data: coin } = await supabase.from('coins')
+            const { data: coins } = await supabase.from('coins')
               .select()
               .eq('userid', userid).eq('code', item.code)
-              .limit(1)
-              .single();
-            if(!coin?.id){
-              const result = await supabase.from('coins').insert({
-                name: item.name.trim(),
-                code: item.code.trim(),
-                userid, 
-              });
+              .limit(1);
+            const newCoin = {
+              name: item.name.trim(),
+              code: item.code.trim(),
+              total_invested: Number(item?.total_invested || 0),
+              total_amount: Number(item?.total_amount || 0),
+              avg_price: divide(item?.total_invested, item?.total_amount),
+              userid, 
+            };
+            if(!coins?.[0].id){// new
+              const result = await supabase.from('coins').insert(newCoin);
               if(result?.data){
+                successed = successed + 1;
+              }
+            }else{ // update
+              const result = await supabase.from('coins')
+                .update(newCoin)
+                .eq('userid', userid).eq('code', item.code);
+              console.log('result:', result);
+              
+              if(result?.status === 204){
                 successed = successed + 1;
               }
             }
@@ -98,6 +111,17 @@ export const UploadCoinModal = (props: IUploadCoinModalProps) => {
           <DialogContent className="sm:max-w-[425px]">
             <DialogHeader>
               <DialogTitle>Upload coin</DialogTitle>
+                <p className="text-sm text-grey-200">
+                  Please upload .csv file to import coins.
+                  <br></br>
+                  <a 
+                    href="https://drive.google.com/file/d/10IKbGk0994fZNSyyXcRBj5W06ocjZpxz/view?usp=sharing"
+                    target="_blank"
+                    className="text-teal-500"
+                  > 
+                    Download the coins template here
+                  </a>
+                </p>
                 <form onSubmit={onSubmit} className="w-full space-y-2">
                   <Input
                     type="file"
