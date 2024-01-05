@@ -1,4 +1,4 @@
-import { ICoin, ITransaction } from "@/interfaces";
+import { ETransactionType, ICoin, ITransaction } from "@/interfaces";
 
 export const sum = (items: string[]): number => {
   return items.reduce((acc: number, item: string) => Number(acc || 0) + Number(item || 0), 0);
@@ -29,4 +29,14 @@ export const averageCoinPrice = (coin: ICoin, transactions: ITransaction[]): ICo
     total_invested,
     avg_price: total_invested / total_amount,
   };
+}
+
+export const initialAmountInput = (tnx_type = ETransactionType.BUY, amount = 0): string => {
+  if(amount === undefined){
+    return '';
+  }
+  if(tnx_type === ETransactionType.SELL){
+    return Math.abs(amount).toString(); 
+  }
+  return amount.toString() || '0';
 }

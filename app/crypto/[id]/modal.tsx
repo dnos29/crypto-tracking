@@ -15,7 +15,7 @@ import * as z from "zod"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { averageCoinPrice, multipe, sum } from "@/helpers/calculater-helper";
+import { averageCoinPrice, initialAmountInput, multipe, sum } from "@/helpers/calculater-helper";
 import supabase from "@/utils/supabase";
 import { useRouter } from "next/navigation";
 
@@ -45,7 +45,7 @@ export const CryptoModal = (props: ITransactionModalProps) => {
       platform: transaction?.platform || EPlatform.Okx,
       tnx_date: transaction?.tnx_date ? new Date(transaction?.tnx_date) : new Date(),
       type: transaction?.type || ETransactionType.BUY,
-      amount: transaction?.amount?.toString() || '',
+      amount: initialAmountInput(transaction?.type, transaction?.amount),
       price_at: transaction?.price_at.toString() || '',
       total: transaction?.total?.toString() || '',
     }

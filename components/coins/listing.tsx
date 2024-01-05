@@ -58,7 +58,7 @@ export const CoinListing = (props: ICoinListingProps) => {
           }
         }) || []]);
       }
-      if(sortBy?.profit || sortBy?.profitPercentage){
+      if(sortBy?.profit || sortBy?.profitPercentage || sortBy?.total_invested){
         const key = Object.keys(sortBy)[0] as keyof ICoinDashboard;
         setDashboardItems([...dashboardItems?.sort((item1, item2) => {
           if(sortBy?.[key] === 'asc'){
@@ -82,7 +82,7 @@ export const CoinListing = (props: ICoinListingProps) => {
           <UserButton />
           <p>Hi there!</p> 
         </div>
-        <p className='text-xs	mt-4'>
+        <p className='text-xs	mt-4 text-gray-400'>
           Est total/profit value (USDT)
         </p>
         <p className={`${profitToTextColor(totalProfitVal)}`}>
@@ -90,7 +90,7 @@ export const CoinListing = (props: ICoinListingProps) => {
           <span className='text-2xl'> - </span>
           <span className={`text-2xl font-bold`}>{formatNumber(totalProfitVal, 2)}</span>
         </p>
-        <p className='text-xs'>
+        <p className='text-xs text-gray-400'>
           Inital/remain fund(USDT)
         </p>
         <p className={`${profitToTextColor(totalProfitVal)}`}>
@@ -99,14 +99,14 @@ export const CoinListing = (props: ICoinListingProps) => {
           <span className={`text-2xl font-bold`}>{formatNumber(remainUsdt, 2)}</span>
         </p>
         <div className='mt-2'>
+          <p className='text-xs text-gray-400'>Assets</p>
           <div className='flex gap-2'>
-          <span className='text-sm'>Assets</span>
             <div><CoinModal userid={userid || ''} /></div>
             <div><UploadCoinModal userid={userid || ''} /></div>
             <div><UploadTransactionModal userid={userid || ''} /></div>
           </div>
-          <div className="flex gap-2 mt-2">
-            <span className='text-sm'>Sort by</span>
+          <p className='text-xs text-gray-400'>Sort by</p>
+          <div className="flex gap-2">
             <div className=''>
               <button
                 className=" px-2 text-sm bg-blue-200 rounded"
@@ -129,6 +129,16 @@ export const CoinListing = (props: ICoinListingProps) => {
                 onClick={() => handleSort('profitPercentage')}
               >
                 Percentage {sortBy?.profitPercentage == 'desc' && (<span className='text-sm'>&#9650;</span>)} {sortBy?.profitPercentage == 'asc' && (<span className='text-sm'>&#9660;</span>)}
+              </button>
+            </div>
+            <div className=''>
+              <button
+                className=" px-2 text-sm bg-blue-200 rounded"
+                onClick={() => handleSort('total_invested')}
+              >
+                Total invested 
+                  {sortBy?.total_invested == 'desc' && (<span className='text-sm'>&#9650;</span>)}
+                  {sortBy?.total_invested == 'asc' && (<span className='text-sm'>&#9660;</span>)}
               </button>
             </div>
           </div>
