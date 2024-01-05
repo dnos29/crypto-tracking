@@ -14,16 +14,18 @@ import { UserButton } from "@clerk/clerk-react";
 interface ICoinListingProps {
   userid?: string,
   items?: ICoinDashboard[],
-
+  initialFund: number,
 }
 export const CoinListing = (props: ICoinListingProps) => {
   // const {data} = await supabase.from('coins').select().order('name', { ascending: true }); asc, desc
   const [sortBy, setSortBy] = useState<{[key: string]: 'asc' | 'desc'}>();
   const [searchTerm, setSearchTerm] = useState('');
-  const { userid, items } = props;
+  const { userid, items, initialFund } = props;
   const [dashboardItems, setDashboardItems] = useState(items || []);
   const totalProfitVal = items?.reduce((acc, coin) => acc + coin.profit, 0) || 0;
   const totalEstVal = items?.reduce((acc, coin) => acc + coin.estVal, 0) || 0;
+  const totalInvested = items?.reduce((acc, coin) => acc + coin.total_invested, 0) || 0;
+  const remainUsdt = initialFund - totalInvested;
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     const term = e?.target?.value;
     setSearchTerm(term);
@@ -84,9 +86,17 @@ export const CoinListing = (props: ICoinListingProps) => {
           Est total/profit value (USDT)
         </p>
         <p className={`${profitToTextColor(totalProfitVal)}`}>
-          <span className='text-2xl font-bold'>{formatNumber(totalEstVal, 2)}</span>
+          <span className='text-2xl font-bold'>{formatNumber(totalEstVal + remainUsdt, 2)}</span>
           <span className='text-2xl'> - </span>
           <span className={`text-2xl font-bold`}>{formatNumber(totalProfitVal, 2)}</span>
+        </p>
+        <p className='text-xs'>
+          Inital/remain fund(USDT)
+        </p>
+        <p className={`${profitToTextColor(totalProfitVal)}`}>
+          <span className='text-2xl font-bold'>{formatNumber(initialFund || 0, 2)}</span>
+          <span className='text-2xl'> - </span>
+          <span className={`text-2xl font-bold`}>{formatNumber(remainUsdt, 2)}</span>
         </p>
         <div className='mt-2'>
           <div className='flex gap-2'>

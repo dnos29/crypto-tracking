@@ -5,8 +5,10 @@ import { CoinListing } from '@/components/coins/listing';
 import { ICoinDashboard } from '@/interfaces';
 
 export default async function Home() {
-  const user = await currentUser();
-  const { data: coins } = await supabase.from('coins').select().eq('userid', user?.id).order('name', { ascending: true });;
+  const clerkUser = await currentUser();
+  const {data: users, error} = await supabase.from('users').select().eq('userid', clerkUser?.id).limit(1);
+  
+  const { data: coins } = await supabase.from('coins').select().eq('userid', clerkUser?.id).order('name', { ascending: true });;
   const allSymbols = coins?.map((coin) => (coin?.code.toUpperCase()));
   const { data: marketQuote } = await fetch(`https://pro-api.coinmarketcap.com/v2/cryptocurrency/quotes/latest?symbol=${allSymbols?.join(',')}&convert=USD`, {
     mode: 'cors',
@@ -31,6 +33,6 @@ export default async function Home() {
     } as ICoinDashboard;
   }) || [];
   return (
-    <CoinListing userid={user?.id} items={items} />
+    <CoinListing userid={clerkUser?.id} items={items} initialFund={users?.[0]?.initial_fund || 0} />
   )
 }

@@ -45,11 +45,9 @@ export const CryptoModal = (props: ITransactionModalProps) => {
       platform: transaction?.platform || EPlatform.Okx,
       tnx_date: transaction?.tnx_date ? new Date(transaction?.tnx_date) : new Date(),
       type: transaction?.type || ETransactionType.BUY,
-      amount: transaction?.type == ETransactionType.SELL 
-        ? (0 - transaction?.amount).toString()
-        : transaction?.amount.toString(),
+      amount: transaction?.amount?.toString() || '',
       price_at: transaction?.price_at.toString() || '',
-      total: transaction?.total.toString() || '',
+      total: transaction?.total?.toString() || '',
     }
   })
   const onSubmit = async (values: z.infer<typeof transactionSchema>) => {
