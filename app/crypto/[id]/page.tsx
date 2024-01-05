@@ -29,6 +29,8 @@ export default async function Page({ params }: { params: { id: string } }) {
     headers,
   }).then((res) => res.json());
   const marketPrice = marketInfo?.data?.[params.id.toUpperCase()]?.[0]?.quote?.USD?.price;
+  const profit = totalAmount * marketPrice - totalInvested;
+  const estVal = totalAmount * marketPrice;
   return (
     <>
       <div className="grid grid-row-3 grid-flow-col gap-2 items-center">
@@ -41,7 +43,7 @@ export default async function Page({ params }: { params: { id: string } }) {
         <CryptoModal coin={coin} transactions={transactions || []} isOpen={false} />
       </div>
       <div className='w-full'>
-        <div className="flex p-2 gap-2">
+        <div className="flex p-2 gap-2 mt-2">
           <div className='w-1/2 text-center'>
             <h2 className="text-xs text-gray-400">Market price</h2>
             <p>{formatNumber(marketPrice)}</p>
@@ -49,6 +51,10 @@ export default async function Page({ params }: { params: { id: string } }) {
           <div className='w-1/2 text-center'>
             <h2 className="text-xs text-gray-400">Total invested</h2>
             <p>{isThaTroi ? 0 : formatNumber(totalInvested)}</p>
+          </div>
+          <div className='w-1/2 text-center'>
+            <h2 className={`text-xs text-gray-400`}>Profit/Lost</h2>
+            <p className={`${profit > 0 ? 'text-teal-400' : 'text-red-400'}`}>{formatNumber(profit)}</p>
           </div>
         </div>
         <div className="flex p-2 gap-2">
@@ -58,7 +64,13 @@ export default async function Page({ params }: { params: { id: string } }) {
           </div>
           <div className='w-1/2 text-center'>
             <h2 className="text-xs text-gray-400">Est val</h2>
-            <p> <span>{formatNumber(totalAmount * marketPrice)}</span></p>
+            <p> <span>{formatNumber(estVal)}</span></p>
+          </div>
+          <div className='w-1/2 text-center'>
+            <h2 className="text-xs text-gray-400">% Profit/Loss</h2>
+            <p className={`${profit > 0 ? 'text-teal-400' : 'text-red-400'}`}>
+              <span>{ isThaTroi ? 'G' : formatNumber((estVal - totalInvested)* 100 / totalInvested, 2) + '%'}</span>
+            </p>
           </div>
         </div>
       </div>

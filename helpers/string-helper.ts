@@ -14,3 +14,12 @@ export const convertStrToPlatFrom = (str: string): EPlatform => {
       return EPlatform.Okx;
   }
 }
+
+export const profitToTextColor = (profit: number) => {
+  if(profit > 0){
+    return 'text-teal-500';
+  }else if(profit < 0){
+    return 'text-red-500';
+  }
+  return '';
+}

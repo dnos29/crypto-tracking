@@ -37,6 +37,15 @@ export interface ICoin {
   userid: string,
 }
 
+export interface ICoinDashboard extends ICoin {
+  marketPrice: number,
+  avg_price: number,
+  estVal: number,
+  isProfit: boolean,
+  profit: number,
+  profitPercentage: number,
+}
+
 export enum EPlatform {
   Binance = 'binance',
   Okx = 'okx',

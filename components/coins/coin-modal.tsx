@@ -63,6 +63,7 @@ export const CoinModal = (props: ICoinModalProps) => {
       }
     }
   }
+  //TODO: allow edit, import total_invested, average price, total amount
   return (
     <>
       <Dialog>
@@ -79,13 +80,13 @@ export const CoinModal = (props: ICoinModalProps) => {
               </button>
             ) : (
               <button
-                className="w-5 h-5 text-sm bg-teal-500 rounded p-1 leading-3 text-white"
+                className="text-sm font-semibold bg-blue-200 rounded py-1 px-2 leading-3"
                 onClick={() => {
                   form.reset();
                   setOpenModal(true);
                 }}
               >
-                +
+                + Coin
               </button>
             )
           }
