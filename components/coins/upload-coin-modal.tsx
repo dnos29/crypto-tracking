@@ -55,12 +55,16 @@ export const UploadCoinModal = (props: IUploadCoinModalProps) => {
           return;
         }
         let successed = 0;
-        data.map(async (item: ICoinCsv, idx: number) => {
+        let idx=0;
+        for (const item of data) {
+          idx++;
           try {
             console.log('Importing', item);
             const { data: coins } = await supabase.from('coins')
               .select()
-              .eq('userid', userid).eq('code', item.code)
+              .eq('userid', userid)
+              .eq('code', item.code)
+              .eq('name', item.name)
               .limit(1);
             const newCoin = {
               name: item.name.trim(),
@@ -70,9 +74,11 @@ export const UploadCoinModal = (props: IUploadCoinModalProps) => {
               avg_price: divide(item?.total_invested, item?.total_amount),
               userid, 
             };
-            if(!coins?.[0].id){// new
+            if(!coins?.[0]?.id){// new
               const result = await supabase.from('coins').insert(newCoin);
-              if(result?.data){
+              console.log(result);
+              
+              if(result?.status === 201){
                 successed = successed + 1;
               }
             }else{ // update
@@ -88,15 +94,15 @@ export const UploadCoinModal = (props: IUploadCoinModalProps) => {
           } catch (error) {
             console.log(error);
           }
-          console.log('idx:', idx, '-data.length:', data.length)
-          if(idx === (data.length -1)){
+          console.log('idx:', idx, '- successed:', successed);
+          if(idx === data.length){
             router.refresh();
             alert(`${successed}/${data.length} have been imported.`);
             setLoading(true);
             setOpenModal(false);
             setFile(undefined);
           }
-        });
+        };
       },
     });
   }

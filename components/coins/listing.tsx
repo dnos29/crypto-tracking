@@ -8,7 +8,7 @@ import { UploadCoinModal } from './upload-coin-modal';
 import { UploadTransactionModal } from '@/app/crypto/[id]/upload-transaction-modal';
 import { useEffect, useState } from 'react';
 import { Input } from '../ui/input';
-import { profitToIcon, profitToTextColor } from '@/helpers/string-helper';
+import { profitToTextColor } from '@/helpers/string-helper';
 import { UserButton } from "@clerk/clerk-react";
 
 interface ICoinListingProps {
@@ -95,7 +95,7 @@ export const CoinListing = (props: ICoinListingProps) => {
           Est total/profit value (USDT)
         </p>
         <p className={`${profitToTextColor(totalProfitVal)}`}>
-          <span className='text-2xl font-bold'>{formatNumber(totalEstVal + remainUsdt, 2)}</span>
+          <span className='text-2xl font-bold'>{formatNumber(totalEstVal, 2)}</span>
           <span className='text-2xl'> - </span>
           <span className={`text-2xl font-bold`}>{formatNumber(totalProfitVal, 2)}</span>
         </p>

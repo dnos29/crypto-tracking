@@ -66,7 +66,7 @@ export const CoinModal = (props: ICoinModalProps) => {
       // new
       try {
         await supabase.from('coins').insert({
-         ...newCoin,
+          ...newCoin,
           userid,
         });
         router.refresh();
