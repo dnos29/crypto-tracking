@@ -9,6 +9,7 @@ import Papa from "papaparse";
 import supabase from "@/utils/supabase";
 import { ICoinCsv } from "@/interfaces";
 import { divide } from "@/helpers/calculater-helper";
+import { csvValidator } from "@/helpers/validator.helper";
 
 interface IUploadCoinModalProps {
   userid?: string,
@@ -40,14 +41,20 @@ export const UploadCoinModal = (props: IUploadCoinModalProps) => {
     Papa.parse(file || '', {
       header: true,
       skipEmptyLines: true,
-      complete: function(results: any) {
+      complete: async function(results: any) {
         const data = results.data;
         if(!data.length){
           alert('Blank file');
           return;
         }
-        let successed = 0;
         setLoading(true);
+        const validateResult = await csvValidator(data);
+        if(Object.keys(validateResult).length){
+          alert(`Please check items: ${Object.keys(validateResult).join(',')}`);
+          setLoading(false);
+          return;
+        }
+        let successed = 0;
         data.map(async (item: ICoinCsv, idx: number) => {
           try {
             console.log('Importing', item);

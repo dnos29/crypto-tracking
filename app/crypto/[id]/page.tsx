@@ -40,7 +40,7 @@ export default async function Page({ params }: { params: { id: string } }) {
           </Link>
         </div>
         <p className="text-center uppercase"> {formatNumber(totalAmount, 2)} {params.id}</p>
-        <CryptoModal coin={coin} transactions={transactions || []} isOpen={false} />
+        <div className="w-14"></div>
       </div>
       <div className='w-full'>
         <div className="flex p-2 gap-2 mt-2">
@@ -75,7 +75,10 @@ export default async function Page({ params }: { params: { id: string } }) {
         </div>
       </div>
       <div className='mt-2'>
-        <p className=''>History</p>
+        <div className=''>
+          <p className="text-xs text-gray-400">History</p>
+          <CryptoModal coin={coin} transactions={transactions || []} isOpen={false} />
+        </div>
       </div>
       <div className="list">
         <div className='w-full'>

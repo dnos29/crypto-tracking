@@ -43,6 +43,8 @@ export const CoinModal = (props: ICoinModalProps) => {
       alert('User not found')
       return;
     }
+    console.log('values:', values);
+    
     const newCoin = {
       name: values.name.trim(),
       code: values.code.trim(),
@@ -74,7 +76,6 @@ export const CoinModal = (props: ICoinModalProps) => {
       }
     }
   }
-  //TODO: allow edit, import total_invested, average price, total amount
   return (
     <>
       <Dialog>

@@ -15,7 +15,7 @@ import * as z from "zod"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { averageCoinPrice, initialAmountInput, multipe, sum } from "@/helpers/calculater-helper";
+import { averageCoinPrice, divide, initialAmountInput, multipe, sum } from "@/helpers/calculater-helper";
 import supabase from "@/utils/supabase";
 import { useRouter } from "next/navigation";
 
@@ -109,16 +109,15 @@ export const CryptoModal = (props: ITransactionModalProps) => {
             ) :
               (
                 <div
-                  className="text-sm text-gray-400 text-right cursor-pointer"
+                  className="cursor-pointer"
                   onClick={() => {
                     form.reset();
                     setOpenModal(true)
                   }}
                 >
-                  <button className="bg-teal-500 rounded-full w-5 h-5 text-white inline-block">
-                    <span className="leading-3">&#43;</span>
+                  <button className="px-2 text-sm bg-blue-200 rounded inline-block">
+                    <span>&#43; Add tnx</span>
                   </button>
-                  <span> Add tnx</span>
                 </div>
               )
           }
@@ -208,6 +207,27 @@ export const CryptoModal = (props: ITransactionModalProps) => {
                 />
                 <FormField
                   control={form.control}
+                  name="total"
+                  render={({ field }) => (
+                    <FormItem className="mt-2">
+                      <FormLabel>Total</FormLabel>
+                      <FormControl>
+                        <Input type="number" placeholder="Enter total" {...field} {...field} onChange={(e) => {
+                          const val = e.target.value;
+                          form.setValue('total', val);
+                          if (form.getValues('amount')) {
+                            const price_at = divide(val, form.getValues('amount') || '0');
+                            form.setValue('price_at',price_at.toString());
+                          }
+                        }}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
                   name="amount"
                   render={({ field }) => (
                     <FormItem className="mt-2">
@@ -215,11 +235,10 @@ export const CryptoModal = (props: ITransactionModalProps) => {
                       <FormControl>
                         <Input className="mt-0.5" type="number" placeholder="Enter amount" {...field} onChange={(e) => {
                           const val = e.target.value;
-                          const isBuy = form.getValues('type') === ETransactionType.BUY;
                           form.setValue('amount', val);
-                          if (form.getValues('price_at')) {
-                            const total = multipe([val, form.getValues('price_at')]);
-                            form.setValue('total', (isBuy ? total : 0 - total).toString());
+                          if (form.getValues('total')) {
+                            const price_at = divide(form.getValues('total'), val);
+                            form.setValue('price_at', price_at.toString());
                           }
                         }} />
                       </FormControl>
@@ -234,28 +253,7 @@ export const CryptoModal = (props: ITransactionModalProps) => {
                     <FormItem className="mt-2">
                       <FormLabel>Price at</FormLabel>
                       <FormControl>
-                        <Input type="number" placeholder="Enter price at" {...field} onChange={(e) => {
-                          const val = e.target.value;
-                          const isBuy = form.getValues('type') === ETransactionType.BUY;
-                          form.setValue('price_at', val);
-                          if (form.getValues('amount')) {
-                            const total = multipe([val, form.getValues('amount') || '0']);
-                            form.setValue('total', (isBuy ? total : 0 - total).toString());
-                          }
-                        }} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="total"
-                  render={({ field }) => (
-                    <FormItem className="mt-2">
-                      <FormLabel>Total</FormLabel>
-                      <FormControl>
-                        <Input type="number" placeholder="Enter total" {...field} readOnly />
+                        <Input type="number" placeholder="Enter price at" {...field} disabled/>
                       </FormControl>
                       <FormMessage />
                     </FormItem>

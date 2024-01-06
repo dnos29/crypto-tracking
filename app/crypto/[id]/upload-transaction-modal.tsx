@@ -6,10 +6,11 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import Papa from "papaparse";
 import supabase from "@/utils/supabase";
-import { ETransactionType, ICoin, ICoinCsv, ITransaction, ITransactionCsv } from "@/interfaces";
+import { ETransactionType, EValidateCsvType, ICoin, ICoinCsv, ITransaction, ITransactionCsv } from "@/interfaces";
 import { Input } from "@/components/ui/input";
 import { convertStrToPlatFrom } from "@/helpers/string-helper";
-import { averageCoinPrice } from "@/helpers/calculater-helper";
+import { averageCoinPrice, divide } from "@/helpers/calculater-helper";
+import { csvValidator } from "@/helpers/validator.helper";
 
 interface IUploadTransactionModalProps {
   userid?: string,
@@ -53,9 +54,13 @@ export const UploadTransactionModal = (props: IUploadTransactionModalProps) => {
           alert('Blank file');
           return;
         }
-        //TODO: check date format_tnx_date, number for amount, price_at
-        let successed = 0;
         setLoading(true);
+        const validateResult = await csvValidator(data, EValidateCsvType.Transaction);
+        if(Object.keys(validateResult)?.length){
+          alert(`Please check items: ${Object.keys(validateResult).join(',')}`);
+          return;
+        }
+        let successed = 0;
         for (const item of data) {
           idx = idx + 1;
           const coinCode = item.coin.trim().toUpperCase();
@@ -87,10 +92,10 @@ export const UploadTransactionModal = (props: IUploadTransactionModalProps) => {
             // default is buy
             newTransaction = {
               type: ETransactionType.BUY,
-              amount: Math.abs(Number(item.amount || 0)),
               tnx_date: item.tnx_date ? new Date(item.tnx_date).toISOString() : new Date().toISOString(),
-              price_at: Math.abs(Number(item.price_at || 0)),
-              total: Number(item.amount || 0) * Number(item.price_at || 0),
+              total: Math.abs(Number(item.total || 0)),
+              amount: Math.abs(Number(item.amount || 0)),
+              price_at: divide(item.total, item.amount),
               userid: userid || '',
               platform: convertStrToPlatFrom(item.platform),
               coin: coinId || 0,
@@ -100,7 +105,7 @@ export const UploadTransactionModal = (props: IUploadTransactionModalProps) => {
             } else if (item.type.toLocaleLowerCase() === ETransactionType.SELL) {
               newTransaction.type = ETransactionType.SELL,
                 newTransaction.amount = 0 - Math.abs(Number(item.amount));
-              newTransaction.total = newTransaction.amount * newTransaction.price_at;
+                newTransaction.price_at = divide(Math.abs(Number(item.total)), item.amount);
             }
             await supabase.from('transactions').insert(newTransaction);
             cacheCoin[coinCode].transactions = cacheCoin[coinCode].transactions.concat(newTransaction);
@@ -151,7 +156,7 @@ export const UploadTransactionModal = (props: IUploadTransactionModalProps) => {
                 Please upload .csv file to import transactions and coins.
                 <br></br>
                 <a
-                  href="https://drive.google.com/file/d/10aRGw8wr4dDE-SD_OppwHCRbu_AeO4Pp/view?usp=sharing"
+                  href="https://docs.google.com/spreadsheets/d/1t1y4SmuuO5AeR02p9WHuwH98BEd_9jJREzFn57dT39g/edit?usp=drive_link"
                   target="_blank"
                   className="text-teal-500"
                 >

@@ -8,19 +8,20 @@ import { UploadCoinModal } from './upload-coin-modal';
 import { UploadTransactionModal } from '@/app/crypto/[id]/upload-transaction-modal';
 import { useEffect, useState } from 'react';
 import { Input } from '../ui/input';
-import { profitToTextColor } from '@/helpers/string-helper';
+import { profitToIcon, profitToTextColor } from '@/helpers/string-helper';
 import { UserButton } from "@clerk/clerk-react";
 
 interface ICoinListingProps {
   userid?: string,
   items?: ICoinDashboard[],
   initialFund: number,
+  noti_sell?: string,
 }
 export const CoinListing = (props: ICoinListingProps) => {
   // const {data} = await supabase.from('coins').select().order('name', { ascending: true }); asc, desc
   const [sortBy, setSortBy] = useState<{[key: string]: 'asc' | 'desc'}>();
   const [searchTerm, setSearchTerm] = useState('');
-  const { userid, items, initialFund } = props;
+  const { userid, items, initialFund, noti_sell } = props;
   const [dashboardItems, setDashboardItems] = useState(items || []);
   const totalProfitVal = items?.reduce((acc, coin) => acc + coin.profit, 0) || 0;
   const totalEstVal = items?.reduce((acc, coin) => acc + coin.estVal, 0) || 0;
@@ -91,12 +92,12 @@ export const CoinListing = (props: ICoinListingProps) => {
           <span className={`text-2xl font-bold`}>{formatNumber(totalProfitVal, 2)}</span>
         </p>
         <p className='text-xs text-gray-400'>
-          Inital/remain fund(USDT)
+          Remain/Inital fund(USDT)
         </p>
-        <p className={`${profitToTextColor(totalProfitVal)}`}>
-          <span className='text-2xl font-bold'>{formatNumber(initialFund || 0, 2)}</span>
-          <span className='text-2xl'> - </span>
+        <p className={`${profitToTextColor(remainUsdt)}`}>
           <span className={`text-2xl font-bold`}>{formatNumber(remainUsdt, 2)}</span>
+          <span className='text-2xl'> - </span>
+          <span className='text-2xl font-bold'>{formatNumber(initialFund || 0, 2)}</span>
         </p>
         <div className='mt-2'>
           <p className='text-xs text-gray-400'>Assets</p>
@@ -151,7 +152,12 @@ export const CoinListing = (props: ICoinListingProps) => {
                 dashboardItems?.map((coin: any) => (
                   <div key={coin.id} className="border-b-2 border-slate-100 mt-2">
                     <div className="flex justify-between">
-                      <div className='text-sm w-32 grid items-center font-medium'><div>{coin.name} - {formatNumber(coin.total_amount || 0, 2)}</div></div>
+                      <div className='text-sm w-32 flex gap-1 items-center font-medium'>
+                        <div>
+                            {coin.name} - {formatNumber(coin.total_amount || 0, 2)} 
+                        </div>
+                        <div>{profitToIcon(noti_sell || '', coin)}</div>
+                      </div>
                     </div>
                     <div className="flex text-sm rounded pb-2">
                       <Link href={`/crypto/${coin.code}`} className='w-1/2 inline-block'>

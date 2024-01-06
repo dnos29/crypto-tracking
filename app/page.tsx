@@ -33,6 +33,11 @@ export default async function Home() {
     } as ICoinDashboard;
   }) || [];
   return (
-    <CoinListing userid={clerkUser?.id} items={items} initialFund={users?.[0]?.initial_fund || 0} />
+    <CoinListing
+      userid={clerkUser?.id}
+      items={items}
+      initialFund={users?.[0]?.initial_fund || 0}
+      noti_sell={users?.[0]?.noti_sell}
+    />
   )
 }

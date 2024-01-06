@@ -1,4 +1,4 @@
-import { EPlatform } from "@/interfaces";
+import { EPlatform, ICoinDashboard } from "@/interfaces";
 
 export const padStartStr = (str: string | number, maxLength = 2, fillString = '0') => {
   return str.toString().padStart(maxLength, fillString);
@@ -22,4 +22,54 @@ export const profitToTextColor = (profit: number) => {
     return 'text-red-500';
   }
   return '';
+}
+
+const enum ECompareSybol {
+  gt = 'gt',
+  gte = 'gte',
+  lt = 'lt',
+  lte = 'lte',
+  e = 'e',
+}
+export const profitToIcon = (noti_sell: string, coin: ICoinDashboard): string => {
+  if(coin?.total_invested < 1){
+    return '';
+  }
+  const conditions = noti_sell.split(',').filter(condition => (!!condition));  
+  // console.log(conditions);
+  const checkResult: boolean[] = conditions.map((condition: string) => (checkByCondition(condition, coin))); 
+  if(checkResult.length && checkResult.some((check) => (check))){
+    return '🔥';
+  }
+  return '';
+}
+
+export const checkByCondition = (condition: string, coin: ICoinDashboard): boolean => {
+  const [comparisonKey , comparison, comparisonVal]= [...condition.split('|')];
+  if(!Object.keys(coin).includes(comparisonKey)){
+    return false;
+  }
+  if(!!comparisonKey && !!comparison && !!comparisonVal){
+    const key = comparisonKey as keyof ICoinDashboard;
+    // console.log(comparisonKey, comparison, comparisonVal, coin?.[key]);
+    try {
+      switch (comparison) {
+        case ECompareSybol.gt:
+          return Number(coin?.[key]) > Number(comparisonVal);
+        case ECompareSybol.gte:
+          return Number(coin?.[key]) >= Number(comparisonVal);
+        case ECompareSybol.gte:
+          return Number(coin?.[key]) === Number(comparisonVal);
+        case ECompareSybol.lt:
+          return Number(coin?.[key]) < Number(comparisonVal);
+        case ECompareSybol.lte:
+          return Number(coin?.[key]) <= Number(comparisonVal);
+        default:
+          return false;
+      }
+    } catch (error) {
+      return false; 
+    }
+  }
+  return false;
 }

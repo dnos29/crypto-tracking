@@ -59,3 +59,14 @@ export const TPlatformColor = {
   [EPlatform.Okx]: 'bg-slate-500',
   [EPlatform.Mexc]: 'bg-blue-500',
 }
+
+export interface IValidationResult{
+  [key: number]: {
+    errors: any;
+  }
+}
+
+export enum EValidateCsvType{
+  Transaction,
+  Coin
+}

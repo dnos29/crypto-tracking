@@ -13,7 +13,7 @@ export const multipe = (items: string[]): number => {
   return result;
 }
 
-export const divide = (dividend: string, divisor: string): number => {
+export const divide = (dividend: string | number, divisor: string | number): number => {
   if(Number(divisor) === 0){
     return 0;
   }
