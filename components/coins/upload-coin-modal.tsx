@@ -63,12 +63,16 @@ export const UploadCoinModal = (props: IUploadCoinModalProps) => {
             const { data: coins } = await supabase.from('coins')
               .select()
               .eq('userid', userid)
-              .eq('code', item.code)
               .eq('name', item.name)
+              .eq('cmc_id', item.cmc_id)
               .limit(1);
+            // 
             const newCoin = {
               name: item.name.trim(),
-              code: item.code.trim(),
+              cmc_name: item.cmc_name.trim(),
+              cmc_slug: item.cmc_slug.trim(),
+              cmc_id: item.cmc_id.trim(),
+              cmc_symbol: item.cmc_symbol.trim(),
               total_invested: Number(item?.total_invested || 0),
               total_amount: Number(item?.total_amount || 0),
               avg_price: divide(item?.total_invested, item?.total_amount),
@@ -84,7 +88,8 @@ export const UploadCoinModal = (props: IUploadCoinModalProps) => {
             }else{ // update
               const result = await supabase.from('coins')
                 .update(newCoin)
-                .eq('userid', userid).eq('code', item.code);
+                .eq('userid', userid)
+                .eq('cmc_id', item.cmc_id);
               console.log('result:', result);
               
               if(result?.status === 204){

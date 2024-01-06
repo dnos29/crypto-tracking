@@ -10,16 +10,17 @@ export default async function Home() {
   const {data: users, error} = await supabase.from('users').select().eq('userid', clerkUser?.id).limit(1);
   
   const { data: coins } = await supabase.from('coins').select().eq('userid', clerkUser?.id).order('name', { ascending: true });;
-  const allSymbols = coins?.map((coin) => (coin?.code.toUpperCase()));
-  const { data: marketQuote } = await fetch(`https://pro-api.coinmarketcap.com/v2/cryptocurrency/quotes/latest?symbol=${allSymbols?.join(',')}&convert=USD`, {
+  const allCmcIds = coins?.map((coin) => (coin?.cmc_id));
+  const { data: marketQuote } = await fetch(`https://pro-api.coinmarketcap.com/v2/cryptocurrency/quotes/latest?id=${allCmcIds?.join(',')}&convert=USD&aux=is_active`, {
     mode: 'cors',
     headers: cmcHeaders,
   }).then((res) => res.json()).catch(err => {
     console.log(err);
   });
+  // console.log('marketQuote', marketQuote);
   
   const items: ICoinDashboard[] = coins?.map((coin) => {
-    const marketPrice = marketQuote?.[coin.code.toUpperCase()]?.[0]?.quote?.USD?.price;
+    const marketPrice = marketQuote?.[coin.cmc_id.toString()]?.quote?.USD?.price;
     const estVal = marketPrice * (coin.total_amount || 0);
     const profit = estVal - coin.total_invested;
     const profitPercentage = coin.total_invested < 1 ? 0 :

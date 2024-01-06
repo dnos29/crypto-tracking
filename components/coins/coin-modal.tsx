@@ -11,10 +11,11 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import supabase from "@/utils/supabase";
 import { useRouter } from "next/navigation";
 import { divide } from "@/helpers/calculater-helper";
+import { findCmcMap } from "@/helpers/validator.helper";
 
 const coinSchema = z.object({
   name: z.string().toUpperCase().min(1),
-  code: z.string().toUpperCase().min(1),
+  cmc_name: z.string().min(1),
   total_amount: z.string().min(1),
   avg_price: z.string().min(1),
   total_invested: z.string().min(1),
@@ -32,7 +33,7 @@ export const CoinModal = (props: ICoinModalProps) => {
     resolver: zodResolver(coinSchema),
     defaultValues: {
       name: coin?.name || '',
-      code: coin?.code || '',
+      cmc_name: coin?.cmc_name || '',
       total_amount: coin?.total_amount?.toString() || '',
       avg_price: coin?.avg_price.toString() || '',
       total_invested: coin?.total_invested?.toString() || '',
@@ -43,11 +44,19 @@ export const CoinModal = (props: ICoinModalProps) => {
       alert('User not found')
       return;
     }
-    console.log('values:', values);
-    
+    // console.log('values:', values);
+    const cmc_name = values.cmc_name.trim();
+    const cmc_map = findCmcMap(cmc_name);
+    if(!cmc_map?.cmc_id){
+      alert(`Based on cmc name=${cmc_name}, Coinmarketcap id is not found`);
+      return;
+    }
     const newCoin = {
       name: values.name.trim(),
-      code: values.code.trim(),
+      cmc_id: cmc_map.cmc_id,
+      cmc_name: cmc_name,
+      cmc_slug: cmc_map?.cmc_slug,
+      cmc_symbol: cmc_map?.cmc_symbol,
       total_invested: Number(values.total_invested || 0),
       total_amount: Number(values.total_amount || 0),
       avg_price: Number(values.avg_price || 0),
@@ -55,6 +64,17 @@ export const CoinModal = (props: ICoinModalProps) => {
     if (coin?.id) {
       // update
       try {
+        const {data: existedCoins} = await supabase.from('coins')
+          .select()
+          .eq('userid', userid)
+          .eq('name', newCoin.name)
+          .eq('cmc_id', newCoin.cmc_id)
+          .neq('id', coin?.id)
+          .limit(1);
+        if(existedCoins?.[0]?.id){
+          alert(`Coin with name=${newCoin.name} and cmc_id=${newCoin.cmc_id} is existed.`);
+          return;
+        }
         await supabase.from('coins').update(newCoin)
           .eq('id', coin?.id).eq('userid', userid);
         router.refresh();
@@ -65,6 +85,16 @@ export const CoinModal = (props: ICoinModalProps) => {
     } else {
       // new
       try {
+        const {data: existedCoins} = await supabase.from('coins')
+          .select()
+          .eq('userid', userid)
+          .eq('name', newCoin.name)
+          .eq('cmc_id', newCoin.cmc_id)
+          .limit(1);
+        if(existedCoins?.[0]?.id){
+          alert(`Coin with name=${newCoin.name} and cmc_id=${newCoin.cmc_id} is existed.`);
+          return;
+        }
         await supabase.from('coins').insert({
           ...newCoin,
           userid,
@@ -118,10 +148,11 @@ export const CoinModal = (props: ICoinModalProps) => {
                       <FormItem>
                         <FormLabel>Name</FormLabel>
                         <FormControl>
-                          <Input placeholder="Enter coin name" {...field} onChange={(e) => {
-                            form.setValue('name', e.target.value.toUpperCase());
-                            form.setValue('code', e.target.value.toUpperCase())
-                          }} />
+                          <Input placeholder="Enter coin name" {...field}  
+                            onChange={(e) => {
+                              form.setValue('name', e.target.value.toUpperCase())
+                            }}
+                          />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -129,14 +160,18 @@ export const CoinModal = (props: ICoinModalProps) => {
                   />
                   <FormField
                     control={form.control}
-                    name="code"
+                    name="cmc_name"
                     render={({ field }) => (
                       <FormItem className="mt-2">
-                        <FormLabel>Code</FormLabel>
+                        <FormLabel>Cmc name</FormLabel>
                         <FormControl>
-                          <Input placeholder="Enter coin code" {...field} onChange={(e) => {
-                            form.setValue('code', e.target.value.toUpperCase())
-                          }}
+                          <Input placeholder="Enter cmc name" {...field}
+                            onBlur={() => {
+                              const cmc_map = findCmcMap(form.getValues('cmc_name').trim());
+                              if(!cmc_map?.cmc_id){
+                                alert(`Based on cmc name=${form.getValues('cmc_name')}, Coinmarketcap id is not found`);
+                              }
+                            }}
                           />
                         </FormControl>
                         <FormMessage />

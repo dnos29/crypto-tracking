@@ -32,7 +32,10 @@ export interface ICoinCsv {
 export interface ICoin {
   id?: number,
   name: string,
-  code: string,
+  cmc_id: number,
+  cmc_name: string,
+  cmc_slug: string,
+  cmc_symbol: string,
   total_amount: number,
   avg_price: number,
   total_invested: number,
@@ -70,4 +73,16 @@ export interface IValidationResult{
 export enum EValidateCsvType{
   Transaction,
   Coin
+}
+
+export interface ICmcMap {
+  id: number
+  rank: number
+  name: string
+  symbol: string
+  slug: string
+  is_active: number
+  first_historical_data: string
+  last_historical_data: string
+  platform: any
 }

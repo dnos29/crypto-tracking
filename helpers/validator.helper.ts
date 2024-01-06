@@ -1,7 +1,7 @@
 import { EPlatform, EValidateCsvType, IValidationResult } from "@/interfaces";
-import { ETransactionType } from "@/interfaces";
-import { IsDateString, IsEnum, IsNotEmpty, IsNumber, IsNumberString, IsOptional, Length, validate, validateOrReject } from "class-validator";
-import { number } from "zod";
+import { ETransactionType, ICmcMap } from "@/interfaces";
+import { IsDateString, IsEnum, IsNotEmpty, IsNumber, IsNumberString, IsOptional, IsString, Length, validate, validateOrReject } from "class-validator";
+import CmcCryptoCurrencyMap from '../cmc-data/cmc-cryptocurrency-map.json';
 
 class TransactionCsv{
   @IsNotEmpty()
@@ -44,7 +44,18 @@ class CoinCsv{
   name: string;
 
   @IsNotEmpty()
-  code?: string;
+  @IsNumber()
+  cmc_id: number;
+
+  @IsNotEmpty()
+  cmc_name: string;
+
+  @IsOptional()
+  @IsNotEmpty()
+  cmc_slug: string;
+
+  @IsNotEmpty()
+  cmc_symbol: string;
 
   @IsOptional()
   @IsNumberString()
@@ -56,7 +67,10 @@ class CoinCsv{
 
   constructor(params?: any){
     this.name = params?.name?.toUpperCase();
-    this.code = params?.code?.toUpperCase();
+    this.cmc_id = Number(params?.cmc_id);
+    this.cmc_name = params?.cmc_name?.toUpperCase();
+    this.cmc_slug = params?.cmc_slug?.toUpperCase();
+    this.cmc_symbol = params?.cmc_symbol?.toUpperCase();
     this.total_invested = params?.total_invested || '0';
     this.total_amount = params?.total_amount || '0';
   }
@@ -82,4 +96,15 @@ export const csvValidator = async (items: any[], type = EValidateCsvType.Coin): 
   }
   console.log('validateResults.idxs', Object.keys(validateResults));
   return validateResults;
+}
+
+export const findCmcMap = (cmc_name: string) => {
+  const data: ICmcMap[] = CmcCryptoCurrencyMap?.data || [];
+  const cmc_map = data.find(item => item.name === cmc_name);
+  return {
+    cmc_id: cmc_map?.id,
+    cmc_name: cmc_map?.name,
+    cmc_slug: cmc_map?.slug,
+    cmc_symbol: cmc_map?.symbol,
+  };
 }

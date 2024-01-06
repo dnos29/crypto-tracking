@@ -172,13 +172,14 @@ export const CoinListing = (props: ICoinListingProps) => {
                     <div className="flex justify-between">
                       <div className='text-sm w-32 flex gap-1 items-center font-medium'>
                         <div>
-                            {coin.name} - {formatNumber(coin.total_amount || 0, 2)} 
+                            {coin.name} - {formatNumber(coin.total_amount || 0, 2)}
+                            <p className='text-xs text-gray-400'>{coin.cmc_name}</p>
                         </div>
                         <div>{coin.profitToIcon}</div>
                       </div>
                     </div>
                     <div className="flex text-sm rounded pb-2">
-                      <Link href={`/crypto/${coin.code}`} className='w-1/2 inline-block'>
+                      <Link href={`/crypto/${coin.cmc_id}`} className='w-1/2 inline-block'>
 
                         <p className="text-gray-400 text-xs">Total invested/Est val</p>
                         <p>
@@ -199,7 +200,7 @@ export const CoinListing = (props: ICoinListingProps) => {
                           }
                         </p>
                       </Link>
-                      <Link href={`/crypto/${coin.code}`} className='w-1/2 inline-block'>
+                      <Link href={`/crypto/${coin.cmc_id}`} className='w-1/2 inline-block'>
                         <p className="text-gray-400 text-xs">Avg/Market price</p>
                         <p className={`${(coin.avg_price === 0 && coin.profit > 0) && 'text-teal-500'}`}>
                           {(coin.avg_price === 0 && coin.profit > 0) ? 'G': formatNumber(coin.avg_price) || '-'}

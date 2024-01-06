@@ -15,20 +15,20 @@ const headers = new Headers({
 
 export default async function Page({ params }: { params: { id: string } }) {
   const user = await currentUser();
-  const { data: coin } = await supabase.from('coins').select().eq('userid', user?.id).eq('code', params.id?.toUpperCase()).limit(1).single();
+  const { data: coin } = await supabase.from('coins').select().eq('userid', user?.id).eq('cmc_id', params.id).limit(1).single();
   const { data: transactions } = await supabase.from('transactions').select()
     .eq('userid', user?.id)
-    .eq('coin', coin?.id)
+    .eq('cmc_id', coin?.cmc_id)
     .order('tnx_date', { ascending: true });
   const totalAmount = transactions?.reduce((accumulator, tnx: ITransaction) => accumulator + tnx.amount, 0);
   const totalInvested = transactions?.reduce((accumulator, tnx: ITransaction) => accumulator + tnx.total, 0);
   const isThaTroi = totalInvested < 1;
   const avgPrice = isThaTroi ? 0 : totalInvested / totalAmount;
-  const marketInfo = await fetch(`https://pro-api.coinmarketcap.com/v2/cryptocurrency/quotes/latest?symbol=${params.id.toUpperCase()}&convert=USD`, {
+  const { data: marketQuote } = await fetch(`https://pro-api.coinmarketcap.com/v2/cryptocurrency/quotes/latest?id=${params.id}&convert=USD&aux=is_active`, {
     mode: 'cors',
     headers,
   }).then((res) => res.json());
-  const marketPrice = marketInfo?.data?.[params.id.toUpperCase()]?.[0]?.quote?.USD?.price;
+  const marketPrice = marketQuote?.[coin.cmc_id.toString()]?.quote?.USD?.price;
   const profit = totalAmount * marketPrice - totalInvested;
   const estVal = totalAmount * marketPrice;
   return (
@@ -39,7 +39,13 @@ export default async function Page({ params }: { params: { id: string } }) {
             <button className="text-sm text-gray-400">&#9664; Back</button>
           </Link>
         </div>
-        <p className="text-center uppercase"> {formatNumber(totalAmount, 2)} {params.id}</p>
+        <p className="text-center uppercase">
+          {formatNumber(totalAmount, 2)} {coin.name}
+          <br />
+          <span className="text-xs text-gray-400">
+            {coin.cmc_name}
+          </span>
+        </p>
         <div className="w-14"></div>
       </div>
       <div className='w-full'>
