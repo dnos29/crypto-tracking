@@ -6,6 +6,7 @@ import { ITransaction, ETransactionType } from '../../../interfaces';
 import { CryptoModal } from "./modal";
 import { CryptoDeleteModal } from "./delete-modal";
 import { formatNumber } from "@/helpers/number-helper";
+import { UploadTransactionModal } from './upload-transaction-modal';
 export const revalidate = 0
 
 
@@ -83,7 +84,10 @@ export default async function Page({ params }: { params: { id: string } }) {
       <div className='mt-2'>
         <div className=''>
           <p className="text-xs text-gray-400">History</p>
-          <CryptoModal coin={coin} transactions={transactions || []} isOpen={false} />
+          <div className="flex flex-wrap gap-2">
+            <CryptoModal coin={coin} transactions={transactions || []} isOpen={false} />
+            <UploadTransactionModal userid={user?.id || ''} />
+          </div>
         </div>
       </div>
       <div className="list">

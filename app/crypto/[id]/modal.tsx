@@ -62,7 +62,8 @@ export const CryptoModal = (props: ITransactionModalProps) => {
       amount: values.type === ETransactionType.BUY ? Number(values.amount) : 0 - Number(values.amount),
       price_at: Number(values.price_at),
       total: Number(values.total),
-      coin: coin.id || 0,
+      coin: 0, //TODO remove
+      cmc_id: coin?.cmc_id,
       userid: coin.userid || '',
       ...(transaction?.id && { id: transaction?.id }),
     }
@@ -109,14 +110,13 @@ export const CryptoModal = (props: ITransactionModalProps) => {
             ) :
               (
                 <div
-                  className="cursor-pointer"
                   onClick={() => {
                     form.reset();
                     setOpenModal(true)
                   }}
                 >
-                  <button className="px-2 text-sm bg-blue-200 rounded inline-block">
-                    <span>&#43; Add tnx</span>
+                  <button className="px-2 py-1 text-sm bg-blue-200 rounded inline-block">
+                    <span>&#43; Transaction</span>
                   </button>
                 </div>
               )

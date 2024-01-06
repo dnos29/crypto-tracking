@@ -11,7 +11,8 @@ export interface ITransaction {
   price_at: number,
   total: number,
   platform: EPlatform,
-  coin: number,
+  coin: number,//TODO remove
+  cmc_id: number,
   userid: string,
 }
 export interface ITransactionCsv {

@@ -102,7 +102,7 @@ export const UploadCoinModal = (props: IUploadCoinModalProps) => {
           console.log('idx:', idx, '- successed:', successed);
           if(idx === data.length){
             router.refresh();
-            alert(`${successed}/${data.length} have been imported.`);
+            alert(`${successed}/${data.length} coins have been imported.`);
             setLoading(true);
             setOpenModal(false);
             setFile(undefined);

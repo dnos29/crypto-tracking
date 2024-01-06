@@ -10,7 +10,7 @@ import { ETransactionType, EValidateCsvType, ICoin, ICoinCsv, ITransaction, ITra
 import { Input } from "@/components/ui/input";
 import { convertStrToPlatFrom } from "@/helpers/string-helper";
 import { averageCoinPrice, divide } from "@/helpers/calculater-helper";
-import { csvValidator } from "@/helpers/validator.helper";
+import { csvValidator, findCmcMap } from "@/helpers/validator.helper";
 
 interface IUploadTransactionModalProps {
   userid?: string,
@@ -63,30 +63,46 @@ export const UploadTransactionModal = (props: IUploadTransactionModalProps) => {
         let successed = 0;
         for (const item of data) {
           idx = idx + 1;
-          const coinCode = item.coin.trim().toUpperCase();
-          let coinId = cacheCoin[coinCode]?.coin?.id;
+          const cacheCoinKey = item.coin_name.trim().toUpperCase() + item.cmc_id;
+          let coinId = cacheCoin[cacheCoinKey]?.coin?.id;
           let newTransaction: ITransaction;
 
           try {
             if (!coinId) {
               const { data: coins } = await supabase.from('coins')
                 .select()
-                .eq('code', item.coin).eq('userid', userid)
+                .eq('name', item.coin_name)
+                .eq('cmc_id', item.cmc_id)
+                .eq('userid', userid)
                 .limit(1);
               // neu coin da ton tai trong db
               if (coins?.[0]) {
                 coinId = coins?.[0]?.id;
-                cacheCoin[coinCode] = { coin: coins?.[0], transactions: [] };
+                cacheCoin[cacheCoinKey] = { coin: coins?.[0], transactions: [] };
                 const { data: tnxs } = await supabase.from('transactions')
                   .select().eq('userid', userid).eq('coin', coinId);
                 console.log('tnxs:', tnxs);
-                cacheCoin[coinCode].transactions = tnxs as ITransaction[];
+                cacheCoin[cacheCoinKey].transactions = tnxs as ITransaction[];
               } else {
+                // check cmc-crypto-currency-map
+                const cmc_map = findCmcMap(item.cmc_name);
+                if(!cmc_map?.cmc_id || cmc_map?.cmc_id !== Number(item.cmc_id)){
+                  setLoading(false);
+                  alert(`cmc_id=${item.cmc_id} and cmc_name=${item.cmc_name} are not match`);
+                  return;
+                }
                 const { data: coins, error } = await supabase.from('coins')
-                  .insert({ name: coinCode, code: coinCode, userid })
+                  .insert({ 
+                    name: item.coin_name,
+                    cmc_id: item.cmc_id,
+                    cmc_name: item.cmc_name,
+                    cmc_slug: item.cmc_slug,
+                    cmc_symbol: item.cmc_symbol,
+                    userid,
+                  })
                   .select();
                 coinId = coins?.[0].id;
-                cacheCoin[coinCode] = { coin: coins?.[0], transactions: [] };
+                cacheCoin[cacheCoinKey] = { coin: coins?.[0], transactions: [] };
               }
             }
             // default is buy
@@ -99,6 +115,7 @@ export const UploadTransactionModal = (props: IUploadTransactionModalProps) => {
               userid: userid || '',
               platform: convertStrToPlatFrom(item.platform),
               coin: coinId || 0,
+              cmc_id: item.cmc_id,
             }
             if (item.type.toLocaleLowerCase() === ETransactionType.HOLDING) {
               newTransaction.total = 0;
@@ -108,8 +125,8 @@ export const UploadTransactionModal = (props: IUploadTransactionModalProps) => {
                 newTransaction.price_at = divide(Math.abs(Number(item.total)), item.amount);
             }
             await supabase.from('transactions').insert(newTransaction);
-            cacheCoin[coinCode].transactions = cacheCoin[coinCode].transactions.concat(newTransaction);
-            const updateCoin = averageCoinPrice(cacheCoin[coinCode]?.coin, cacheCoin[coinCode].transactions);
+            cacheCoin[cacheCoinKey].transactions = cacheCoin[cacheCoinKey].transactions.concat(newTransaction);
+            const updateCoin = averageCoinPrice(cacheCoin[cacheCoinKey]?.coin, cacheCoin[cacheCoinKey].transactions);
             await supabase.from('coins').update(updateCoin).eq('id', coinId);
             successed = successed + 1;
             successedIds.push(idx);
@@ -123,7 +140,7 @@ export const UploadTransactionModal = (props: IUploadTransactionModalProps) => {
           // create tnx
         }
         router.refresh();
-        alert(`${successed}/${data.length} have been imported.`);
+        alert(`${successed}/${data.length} transactions have been imported.`);
         console.log(`${successed}/${data.length} have been imported.`)
         setLoading(true);
         setOpenModal(false);

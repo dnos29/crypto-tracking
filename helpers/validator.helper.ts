@@ -5,7 +5,21 @@ import CmcCryptoCurrencyMap from '../cmc-data/cmc-cryptocurrency-map.json';
 
 class TransactionCsv{
   @IsNotEmpty()
-  coin: string;
+  coin_name: string;
+
+  @IsNotEmpty()
+  @IsNumber()
+  cmc_id: number;
+
+  @IsNotEmpty()
+  cmc_name: string;
+
+  @IsOptional()
+  @IsNotEmpty()
+  cmc_slug: string;
+
+  @IsNotEmpty()
+  cmc_symbol: string;
 
   @IsOptional()
   @IsEnum(ETransactionType)
@@ -29,7 +43,11 @@ class TransactionCsv{
   total: string;
 
   constructor(params?: any){
-    this.coin = params?.coin?.toUpperCase();
+    this.coin_name = params?.coin_name?.toUpperCase();
+    this.cmc_id = Number(params?.cmc_id);
+    this.cmc_name = params?.cmc_name;
+    this.cmc_slug = params?.cmc_slug;
+    this.cmc_symbol = params?.cmc_symbol;
     this.type = params?.type?.toLocaleLowerCase();
     this.platform = params?.platform.toLocaleLowerCase();
     this.tnx_date = params?.tnx_date;
@@ -68,9 +86,9 @@ class CoinCsv{
   constructor(params?: any){
     this.name = params?.name?.toUpperCase();
     this.cmc_id = Number(params?.cmc_id);
-    this.cmc_name = params?.cmc_name?.toUpperCase();
-    this.cmc_slug = params?.cmc_slug?.toUpperCase();
-    this.cmc_symbol = params?.cmc_symbol?.toUpperCase();
+    this.cmc_name = params?.cmc_name;
+    this.cmc_slug = params?.cmc_slug;
+    this.cmc_symbol = params?.cmc_symbol;
     this.total_invested = params?.total_invested || '0';
     this.total_amount = params?.total_amount || '0';
   }
