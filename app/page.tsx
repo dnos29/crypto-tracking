@@ -3,6 +3,7 @@ import supabase from '@/utils/supabase';
 import { currentUser } from '@clerk/nextjs';
 import { CoinListing } from '@/components/coins/listing';
 import { ICoinDashboard } from '@/interfaces';
+import { profitToIcon } from '@/helpers/string-helper';
 
 export default async function Home() {
   const clerkUser = await currentUser();
@@ -20,16 +21,22 @@ export default async function Home() {
   const items: ICoinDashboard[] = coins?.map((coin) => {
     const marketPrice = marketQuote?.[coin.code.toUpperCase()]?.[0]?.quote?.USD?.price;
     const estVal = marketPrice * (coin.total_amount || 0);
-    // lai: total_invested >= 1, estVal > total_invested
-    // tha troi: total_invested < 1, 
-    return {
+    const profit = estVal - coin.total_invested;
+    const profitPercentage = coin.total_invested < 1 ? 0 :
+    (estVal - coin.total_invested) / coin.total_invested * 100 || 0;
+    // tha troi: total_invested < 1,
+    const coinDashboard: ICoinDashboard = {
       ...coin,
       marketPrice,
       avg_price: coin.total_invested < 1 ? 0 : coin.avg_price,
       estVal: marketPrice * (coin.total_amount || 0),
       isProfit: coin.avg_price < marketPrice,
-      profit: estVal - coin.total_invested,
-      profitPercentage: coin.total_invested < 1 ? 0 :(estVal - coin.total_invested) / coin.total_invested * 100 || 0,
+      profit,
+      profitPercentage,
+    }
+    return {
+      ...coinDashboard,
+      profitToIcon: profitToIcon(users?.[0]?.noti_sell, coinDashboard),
     } as ICoinDashboard;
   }) || [];
   return (
@@ -37,7 +44,6 @@ export default async function Home() {
       userid={clerkUser?.id}
       items={items}
       initialFund={users?.[0]?.initial_fund || 0}
-      noti_sell={users?.[0]?.noti_sell}
     />
   )
 }

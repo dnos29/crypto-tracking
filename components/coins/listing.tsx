@@ -15,13 +15,13 @@ interface ICoinListingProps {
   userid?: string,
   items?: ICoinDashboard[],
   initialFund: number,
-  noti_sell?: string,
 }
+
 export const CoinListing = (props: ICoinListingProps) => {
   // const {data} = await supabase.from('coins').select().order('name', { ascending: true }); asc, desc
   const [sortBy, setSortBy] = useState<{[key: string]: 'asc' | 'desc'}>();
   const [searchTerm, setSearchTerm] = useState('');
-  const { userid, items, initialFund, noti_sell } = props;
+  const { userid, items, initialFund } = props;
   const [dashboardItems, setDashboardItems] = useState(items || []);
   const totalProfitVal = items?.reduce((acc, coin) => acc + coin.profit, 0) || 0;
   const totalEstVal = items?.reduce((acc, coin) => acc + coin.estVal, 0) || 0;
@@ -69,8 +69,16 @@ export const CoinListing = (props: ICoinListingProps) => {
           }
         }) || []]);
       }
+      if(sortBy?.profitToIcon){
+        if(sortBy?.profitToIcon === 'asc'){
+          setDashboardItems([...dashboardItems.filter(item => (item.profitToIcon !== ''))|| []]);
+        }else{
+          setDashboardItems([...items|| []]);
+        }
+      }
     }, 500);
   }
+
 
   useEffect(() => {
     filterItems(searchTerm, sortBy);
@@ -142,6 +150,14 @@ export const CoinListing = (props: ICoinListingProps) => {
                   {sortBy?.total_invested == 'asc' && (<span className='text-sm'>&#9660;</span>)}
               </button>
             </div>
+            <div className=''>
+              <button
+                className=" px-2 text-sm bg-blue-200 rounded"
+                onClick={() => handleSort('profitToIcon')}
+              >
+                {sortBy?.profitToIcon === 'asc' && (<>&#10004;</>)}🔥
+              </button>
+            </div>
           </div>
           <div className='my-2 flex gap-1'>
             <Input placeholder='Search by name' value={searchTerm} onChange={handleSearch} />
@@ -156,7 +172,7 @@ export const CoinListing = (props: ICoinListingProps) => {
                         <div>
                             {coin.name} - {formatNumber(coin.total_amount || 0, 2)} 
                         </div>
-                        <div>{profitToIcon(noti_sell || '', coin)}</div>
+                        <div>{coin.profitToIcon}</div>
                       </div>
                     </div>
                     <div className="flex text-sm rounded pb-2">

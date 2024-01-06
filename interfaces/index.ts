@@ -46,6 +46,7 @@ export interface ICoinDashboard extends ICoin {
   isProfit: boolean,
   profit: number,
   profitPercentage: number,
+  profitToIcon?: string,
 }
 
 export enum EPlatform {
