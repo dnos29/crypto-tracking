@@ -119,10 +119,12 @@ export const UploadTransactionModal = (props: IUploadTransactionModalProps) => {
             }
             if (item.type.toLocaleLowerCase() === ETransactionType.HOLDING) {
               newTransaction.total = 0;
+              newTransaction.price_at = 0;
             } else if (item.type.toLocaleLowerCase() === ETransactionType.SELL) {
-              newTransaction.type = ETransactionType.SELL,
-                newTransaction.amount = 0 - Math.abs(Number(item.amount));
-                newTransaction.price_at = divide(Math.abs(Number(item.total)), item.amount);
+              newTransaction.type = ETransactionType.SELL;
+              newTransaction.amount = 0 - Math.abs(Number(item.amount));
+              newTransaction.price_at = divide(Math.abs(Number(item.total)), Math.abs(Number(item.amount)));
+              newTransaction.total = 0 - Math.abs(Number(item.total));
             }
             await supabase.from('transactions').insert(newTransaction);
             cacheCoin[cacheCoinKey].transactions = cacheCoin[cacheCoinKey].transactions.concat(newTransaction);
