@@ -150,14 +150,15 @@ export const CoinListing = (props: ICoinListingProps) => {
             <UploadTransactionModal userid={userid || ""} />
           </div>
           {
-            dashboardItems?.length && (
+            !!items?.length && (
               <div>
                 <DeleteAllCoinModal userid={userid || ""} />
               </div>
             )
           }
         </div>
-        {dashboardItems?.length > 0 && (
+        {
+          !!items?.length && (
           <>
             <p className="text-xs text-gray-400">Sort by</p>
             <div className="flex flex-wrap gap-2">
