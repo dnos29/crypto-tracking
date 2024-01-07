@@ -3,10 +3,11 @@ import supabase from "@/utils/supabase"
 import { currentUser } from '@clerk/nextjs'
 import Link from "next/link";
 import { ITransaction, ETransactionType } from '../../../interfaces';
-import { CryptoModal } from "./modal";
-import { CryptoDeleteModal } from "./delete-modal";
+import { TransactionModal } from "./transaction-modal";
+import { DeleteTransactionModal } from "./delete-transaction-modal";
 import { formatNumber } from "@/helpers/number-helper";
 import { UploadTransactionModal } from './upload-transaction-modal';
+import { DeleteAllTransactionModal } from "./delete-all-transaction";
 export const revalidate = 0
 
 
@@ -16,16 +17,20 @@ const headers = new Headers({
 
 export default async function Page({ params }: { params: { id: string } }) {
   const user = await currentUser();
-  const { data: coin } = await supabase.from('coins').select().eq('userid', user?.id).eq('cmc_id', params.id).limit(1).single();
+  const { data: coin } = await supabase.from('coins').select()
+    .eq('userid', user?.id)
+    .eq('id', params.id)
+    .limit(1).single();
   const { data: transactions } = await supabase.from('transactions').select()
     .eq('userid', user?.id)
-    .eq('cmc_id', coin?.cmc_id)
+    .eq('coin', coin?.id)
     .order('tnx_date', { ascending: true });
   const totalAmount = transactions?.reduce((accumulator, tnx: ITransaction) => accumulator + tnx.amount, 0);
   const totalInvested = transactions?.reduce((accumulator, tnx: ITransaction) => accumulator + tnx.total, 0);
   const isThaTroi = totalInvested < 1;
   const avgPrice = isThaTroi ? 0 : totalInvested / totalAmount;
-  const { data: marketQuote } = await fetch(`https://pro-api.coinmarketcap.com/v2/cryptocurrency/quotes/latest?id=${params.id}&convert=USD&aux=is_active`, {
+  const { data: marketQuote } = await fetch(
+    `https://pro-api.coinmarketcap.com/v2/cryptocurrency/quotes/latest?id=${coin?.cmc_id}&convert=USD&aux=is_active`, {
     mode: 'cors',
     headers,
   }).then((res) => res.json());
@@ -85,8 +90,19 @@ export default async function Page({ params }: { params: { id: string } }) {
         <div className=''>
           <p className="text-xs text-gray-400">History</p>
           <div className="flex flex-wrap gap-2">
-            <CryptoModal coin={coin} transactions={transactions || []} isOpen={false} />
-            <UploadTransactionModal userid={user?.id || ''} />
+            <div className="">
+              <TransactionModal coin={coin} transactions={transactions || []} isOpen={false} />
+            </div>
+            <div>
+              <UploadTransactionModal userid={user?.id || ''} />
+            </div>
+            {
+              !transactions?.length && (
+                <div>
+                  <DeleteAllTransactionModal coin={coin} />
+                </div>
+              )
+            }
           </div>
         </div>
       </div>
@@ -119,8 +135,8 @@ export default async function Page({ params }: { params: { id: string } }) {
                   <div className="w-24 text-right">
                     <p className="text-gray-400 text-xs">Actions</p>
                     <div className="mt-1">
-                      <CryptoModal coin={coin} transactions={transactions || []} isOpen={false} transaction={tnx} />
-                      <CryptoDeleteModal id={tnx?.id || -1} coin={coin} transactions={transactions} />
+                      <TransactionModal coin={coin} transactions={transactions || []} isOpen={false} transaction={tnx} />
+                      <DeleteTransactionModal id={tnx?.id || -1} coin={coin} transactions={transactions} />
                     </div>
                   </div>
                 </div>
@@ -142,10 +158,18 @@ export default async function Page({ params }: { params: { id: string } }) {
             )
             )
           }
+          {
+            transactions?.length === 0 && (
+              <div className="text-center">
+                <h3 className="mt-4 text-lg font-semibold">No transactions added</h3>
+                <p className="mb-4 mt-2 text-sm text-muted-foreground">
+                  You have not added any transactions. Add one or upload above.
+                </p>
+              </div>
+            )
+          }
         </div>
       </div>
-      {/* Modal */}
-
     </>
   )
 }

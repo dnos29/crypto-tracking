@@ -34,7 +34,7 @@ interface ITransactionModalProps {
   transactions: ITransaction[],
   isOpen: boolean,
 }
-export const CryptoModal = (props: ITransactionModalProps) => {
+export const TransactionModal = (props: ITransactionModalProps) => {
   const { coin, transaction, transactions, isOpen } = props;
   const [openModal, setOpenModal] = React.useState(isOpen);
   const [summary, setSummary] = React.useState('');
@@ -115,7 +115,7 @@ export const CryptoModal = (props: ITransactionModalProps) => {
                     setOpenModal(true)
                   }}
                 >
-                  <button className="px-2 py-1 text-sm bg-blue-200 rounded inline-block">
+                  <button className="px-2 text-sm bg-blue-200 rounded inline-block">
                     <span>&#43; Transaction</span>
                   </button>
                 </div>

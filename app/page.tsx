@@ -7,6 +7,7 @@ import { profitToIcon } from '@/helpers/string-helper';
 
 export default async function Home() {
   const clerkUser = await currentUser();
+  // clerkUser?.emailAddresses?.[0]?.emailAddress
   const {data: users, error} = await supabase.from('users').select().eq('userid', clerkUser?.id).limit(1);
   
   const { data: coins } = await supabase.from('coins').select().eq('userid', clerkUser?.id).order('name', { ascending: true });;
@@ -45,6 +46,7 @@ export default async function Home() {
       userid={clerkUser?.id}
       items={items}
       initialFund={users?.[0]?.initial_fund || 0}
+      userEmail={clerkUser?.emailAddresses?.[0]?.emailAddress}
     />
   )
 }

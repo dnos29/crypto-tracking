@@ -1,9 +1,22 @@
-'use client';
-import { ICoin } from "@/interfaces"
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "../ui/dialog"
-import { Button } from "../ui/button"
+"use client";
+import { ICoin } from "@/interfaces";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "../ui/dialog";
+import { Button } from "../ui/button";
 import { useState } from "react";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "../ui/form";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "../ui/form";
 import { Input } from "../ui/input";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -22,32 +35,41 @@ const coinSchema = z.object({
 });
 
 interface ICoinModalProps {
-  coin?: ICoin,
-  userid?: string,
+  coin?: ICoin;
+  userid?: string;
 }
 export const CoinModal = (props: ICoinModalProps) => {
   const { coin, userid } = props;
   const [openModal, setOpenModal] = useState(false);
+  const [cmcNameSuggestions, setSmcNameSuggestions] = useState<string[]>();
   const router = useRouter();
   const form = useForm<z.infer<typeof coinSchema>>({
     resolver: zodResolver(coinSchema),
     defaultValues: {
-      name: coin?.name || '',
-      cmc_name: coin?.cmc_name || '',
-      total_amount: coin?.total_amount?.toString() || '',
-      avg_price: coin?.avg_price.toString() || '',
-      total_invested: coin?.total_invested?.toString() || '',
-    }
+      name: coin?.name || "",
+      cmc_name: coin?.cmc_name || "",
+      total_amount: coin?.total_amount?.toString() || "",
+      avg_price: coin?.avg_price.toString() || "",
+      total_invested: coin?.total_invested?.toString() || "",
+    },
   });
+  const suggestCmcName = async (coin_name: string) => {
+    const data = await fetch(
+      `${process.env.NEXT_PUBLIC_BASE_API}cmc-crypto-currency-map?coinName=${coin_name}`
+    ).then((res) => res.json());
+    if (!!data?.length) {
+      setSmcNameSuggestions(data);
+    }
+  };
   const onSubmit = async (values: z.infer<typeof coinSchema>) => {
     if (!userid) {
-      alert('User not found')
+      alert("User not found");
       return;
     }
     // console.log('values:', values);
     const cmc_name = values.cmc_name.trim();
     const cmc_map = findCmcMap(cmc_name);
-    if(!cmc_map?.cmc_id){
+    if (!cmc_map?.cmc_id) {
       alert(`Based on cmc name=${cmc_name}, Coinmarketcap id is not found`);
       return;
     }
@@ -64,19 +86,25 @@ export const CoinModal = (props: ICoinModalProps) => {
     if (coin?.id) {
       // update
       try {
-        const {data: existedCoins} = await supabase.from('coins')
+        const { data: existedCoins } = await supabase
+          .from("coins")
           .select()
-          .eq('userid', userid)
-          .eq('name', newCoin.name)
-          .eq('cmc_id', newCoin.cmc_id)
-          .neq('id', coin?.id)
+          .eq("userid", userid)
+          .eq("name", newCoin.name)
+          .eq("cmc_id", newCoin.cmc_id)
+          .neq("id", coin?.id)
           .limit(1);
-        if(existedCoins?.[0]?.id){
-          alert(`Coin with name=${newCoin.name} and cmc_id=${newCoin.cmc_id} is existed.`);
+        if (existedCoins?.[0]?.id) {
+          alert(
+            `Coin with name=${newCoin.name} and cmc_id=${newCoin.cmc_id} is existed.`
+          );
           return;
         }
-        await supabase.from('coins').update(newCoin)
-          .eq('id', coin?.id).eq('userid', userid);
+        await supabase
+          .from("coins")
+          .update(newCoin)
+          .eq("id", coin?.id)
+          .eq("userid", userid);
         router.refresh();
         setOpenModal(false);
       } catch (error) {
@@ -85,17 +113,20 @@ export const CoinModal = (props: ICoinModalProps) => {
     } else {
       // new
       try {
-        const {data: existedCoins} = await supabase.from('coins')
+        const { data: existedCoins } = await supabase
+          .from("coins")
           .select()
-          .eq('userid', userid)
-          .eq('name', newCoin.name)
-          .eq('cmc_id', newCoin.cmc_id)
+          .eq("userid", userid)
+          .eq("name", newCoin.name)
+          .eq("cmc_id", newCoin.cmc_id)
           .limit(1);
-        if(existedCoins?.[0]?.id){
-          alert(`Coin with name=${newCoin.name} and cmc_id=${newCoin.cmc_id} is existed.`);
+        if (existedCoins?.[0]?.id) {
+          alert(
+            `Coin with name=${newCoin.name} and cmc_id=${newCoin.cmc_id} is existed.`
+          );
           return;
         }
-        await supabase.from('coins').insert({
+        await supabase.from("coins").insert({
           ...newCoin,
           userid,
         });
@@ -105,38 +136,36 @@ export const CoinModal = (props: ICoinModalProps) => {
         console.log(error);
       }
     }
-  }
+  };
   return (
     <>
       <Dialog>
         <DialogTrigger asChild>
-          {
-            coin?.id ? (
-              <button
-                className="w-5 h-5 text-sm bg-blue-200 rounded p-1 leading-3"
-                onClick={() => {
-                  setOpenModal(true)
-                }}
-              >
-                &#9998;
-              </button>
-            ) : (
-              <button
-                className="text-sm bg-blue-200 rounded py-1 px-2 leading-3"
-                onClick={() => {
-                  form.reset();
-                  setOpenModal(true);
-                }}
-              >
-                + Coin
-              </button>
-            )
-          }
+          {coin?.id ? (
+            <button
+              className="w-5 h-5 text-sm bg-blue-200 rounded p-1 leading-3"
+              onClick={() => {
+                setOpenModal(true);
+              }}
+            >
+              &#9998;
+            </button>
+          ) : (
+            <button
+              className="text-sm bg-blue-200 rounded py-1 px-2 leading-3"
+              onClick={() => {
+                form.reset();
+                setOpenModal(true);
+              }}
+            >
+              + Coin
+            </button>
+          )}
         </DialogTrigger>
         {openModal && (
           <DialogContent className="sm:max-w-md">
             <DialogHeader>
-              <DialogTitle>{coin?.name ? 'Edit' : 'Add'} coin</DialogTitle>
+              <DialogTitle>{coin?.name ? "Edit" : "Add"} coin</DialogTitle>
             </DialogHeader>
             <div>
               <Form {...form}>
@@ -148,9 +177,17 @@ export const CoinModal = (props: ICoinModalProps) => {
                       <FormItem>
                         <FormLabel>Name</FormLabel>
                         <FormControl>
-                          <Input placeholder="Enter coin name" {...field}  
+                          <Input
+                            placeholder="Enter coin name"
+                            {...field}
                             onChange={(e) => {
-                              form.setValue('name', e.target.value.toUpperCase())
+                              form.setValue(
+                                "name",
+                                e.target.value.toUpperCase()
+                              );
+                            }}
+                            onBlur={(e) => {
+                              suggestCmcName(e.target.value);
                             }}
                           />
                         </FormControl>
@@ -165,11 +202,19 @@ export const CoinModal = (props: ICoinModalProps) => {
                       <FormItem className="mt-2">
                         <FormLabel>Cmc name</FormLabel>
                         <FormControl>
-                          <Input placeholder="Enter cmc name" {...field}
+                          <Input
+                            placeholder="Enter cmc name"
+                            {...field}
                             onBlur={() => {
-                              const cmc_map = findCmcMap(form.getValues('cmc_name').trim());
-                              if(!cmc_map?.cmc_id){
-                                alert(`Based on cmc name=${form.getValues('cmc_name')}, Coinmarketcap id is not found`);
+                              const cmc_map = findCmcMap(
+                                form.getValues("cmc_name").trim()
+                              );
+                              if (!cmc_map?.cmc_id) {
+                                alert(
+                                  `Based on cmc name=${form.getValues(
+                                    "cmc_name"
+                                  )}, Coinmarketcap id is not found`
+                                );
                               }
                             }}
                           />
@@ -178,6 +223,28 @@ export const CoinModal = (props: ICoinModalProps) => {
                       </FormItem>
                     )}
                   />
+                  {
+                    cmcNameSuggestions?.length && (
+                    <div>
+                      <label className="text-xs text-gray-400">
+                        Suggested cmc_name
+                      </label>
+                      <div className="flex flex-wrap gap-2">
+                        {cmcNameSuggestions?.map((cmc_name) => (
+                          <>
+                            <label
+                              className="px-2 bg-blue-200 rounded text-sm cursor-pointer"
+                              onClick={() => {
+                                form.setValue("cmc_name", cmc_name);
+                              }}
+                            >
+                              {cmc_name}
+                            </label>
+                          </>
+                        ))}
+                      </div>
+                    </div>
+                  )}
                   <FormField
                     control={form.control}
                     name="total_invested"
@@ -185,17 +252,23 @@ export const CoinModal = (props: ICoinModalProps) => {
                       <FormItem className="mt-2">
                         <FormLabel>Total invested</FormLabel>
                         <FormControl>
-                          <Input placeholder="Enter total invested" {...field} onChange={(e) => {
-                            const val = e.target.value;
-                            form.setValue('total_invested', val);
-                            if (form.getValues('total_amount')) {
-                              const avg_price = divide(
-                                val,
-                                form.getValues('total_amount'),
-                              );
-                              form.setValue('avg_price', avg_price.toString());
-                            }
-                          }}
+                          <Input
+                            placeholder="Enter total invested"
+                            {...field}
+                            onChange={(e) => {
+                              const val = e.target.value;
+                              form.setValue("total_invested", val);
+                              if (form.getValues("total_amount")) {
+                                const avg_price = divide(
+                                  val,
+                                  form.getValues("total_amount")
+                                );
+                                form.setValue(
+                                  "avg_price",
+                                  avg_price.toString()
+                                );
+                              }
+                            }}
                           />
                         </FormControl>
                         <FormMessage />
@@ -209,17 +282,23 @@ export const CoinModal = (props: ICoinModalProps) => {
                       <FormItem className="mt-2">
                         <FormLabel>Total amount</FormLabel>
                         <FormControl>
-                          <Input placeholder="Enter total amount" {...field} onChange={(e) => {
-                            const val = e.target.value;
-                            form.setValue('total_amount', val);
-                            if (form.getValues('total_invested')) {
-                              const avg_price = divide(
-                                form.getValues('total_invested'),
-                                val,
-                              );
-                              form.setValue('avg_price', avg_price.toString());
-                            }
-                          }}
+                          <Input
+                            placeholder="Enter total amount"
+                            {...field}
+                            onChange={(e) => {
+                              const val = e.target.value;
+                              form.setValue("total_amount", val);
+                              if (form.getValues("total_invested")) {
+                                const avg_price = divide(
+                                  form.getValues("total_invested"),
+                                  val
+                                );
+                                form.setValue(
+                                  "avg_price",
+                                  avg_price.toString()
+                                );
+                              }
+                            }}
                           />
                         </FormControl>
                         <FormMessage />
@@ -233,15 +312,27 @@ export const CoinModal = (props: ICoinModalProps) => {
                       <FormItem className="mt-2">
                         <FormLabel>Average price</FormLabel>
                         <FormControl>
-                          <Input type="number" placeholder="Enter average price" {...field} disabled />
+                          <Input
+                            type="number"
+                            placeholder="Enter average price"
+                            {...field}
+                            disabled
+                          />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
                     )}
                   />
                   <div className="mt-2">
-                    <Button type="submit" disabled={form.formState.isSubmitting}>Save</Button>
-                    <Button variant='link' onClick={() => setOpenModal(false)}>Cancel</Button>
+                    <Button
+                      type="submit"
+                      disabled={form.formState.isSubmitting}
+                    >
+                      Save
+                    </Button>
+                    <Button variant="link" onClick={() => setOpenModal(false)}>
+                      Cancel
+                    </Button>
                   </div>
                 </form>
               </Form>
@@ -251,4 +342,4 @@ export const CoinModal = (props: ICoinModalProps) => {
       </Dialog>
     </>
   );
-}
+};
