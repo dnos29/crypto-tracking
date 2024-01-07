@@ -178,9 +178,6 @@ export const TransactionModal = (props: ITransactionModalProps) => {
                       </FormLabel>
                       <Select onValueChange={(e) => {
                         form.setValue('type', e as ETransactionType);
-                        const isBuy = e === ETransactionType.BUY;
-                        const total = multipe([form.getValues('amount'), form.getValues('price_at')]);
-                        form.setValue('total', (isBuy ? total : 0 - total).toString());
                       }} defaultValue={field.value}>
                         <FormControl>
                           <SelectTrigger className="capitalize">
