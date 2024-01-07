@@ -38,5 +38,5 @@ export const initialAmountInput = (tnx_type = ETransactionType.BUY, amount = 0):
   if(tnx_type === ETransactionType.SELL){
     return Math.abs(amount).toString(); 
   }
-  return amount.toString() || '0';
+  return amount.toString() || '';
 }

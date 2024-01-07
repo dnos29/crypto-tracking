@@ -47,7 +47,7 @@ export const TransactionModal = (props: ITransactionModalProps) => {
       type: transaction?.type || ETransactionType.BUY,
       amount: initialAmountInput(transaction?.type, transaction?.amount),
       price_at: transaction?.price_at.toString() || '',
-      total: transaction?.total?.toString() || '',
+      total: initialAmountInput(transaction?.type, transaction?.total),
     }
   })
   const onSubmit = async (values: z.infer<typeof transactionSchema>) => {
@@ -55,19 +55,24 @@ export const TransactionModal = (props: ITransactionModalProps) => {
       alert('user not found');
       return;
     }
+    // default is Buy
     const newTransaction: ITransaction = {
       platform: values.platform,
       tnx_date: values.tnx_date.toISOString(),
       type: values.type,
-      amount: values.type === ETransactionType.BUY ? Number(values.amount) : 0 - Number(values.amount),
-      price_at: Number(values.price_at),
-      total: Number(values.total),
-      coin: 0, //TODO remove
+      amount: Math.abs(Number(values.amount)),
+      price_at: divide(Math.abs(Number(values.total)), Math.abs(Number(values.amount))),
+      total: Math.abs(Number(values.total)),
+      coin: coin.id || 0,
       cmc_id: coin?.cmc_id,
       userid: coin.userid || '',
       ...(transaction?.id && { id: transaction?.id }),
     }
-    if (transaction) {
+    if(values.type === ETransactionType.SELL){
+      newTransaction.amount = 0 - Math.abs(Number(values.amount));
+      newTransaction.total = 0 - Math.abs(Number(values.total));
+    }
+    if (transaction?.id) {
       try {
         await supabase.from('transactions')
           .update(newTransaction)

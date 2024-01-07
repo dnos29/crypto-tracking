@@ -97,7 +97,7 @@ export default async function Page({ params }: { params: { id: string } }) {
               <UploadTransactionModal userid={user?.id || ''} />
             </div>
             {
-              !transactions?.length && (
+              !!transactions?.length && (
                 <div>
                   <DeleteAllTransactionModal coin={coin} />
                 </div>
