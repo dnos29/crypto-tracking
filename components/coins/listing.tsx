@@ -149,6 +149,13 @@ export const CoinListing = (props: ICoinListingProps) => {
           <div>
             <UploadTransactionModal userid={userid || ""} />
           </div>
+          {
+            dashboardItems?.length && (
+              <div>
+                <DeleteAllCoinModal userid={userid || ""} />
+              </div>
+            )
+          }
         </div>
         {dashboardItems?.length > 0 && (
           <>
@@ -217,9 +224,6 @@ export const CoinListing = (props: ICoinListingProps) => {
                 >
                   {sortBy?.profitToIcon === "asc" && <>&#10004;</>}🔥
                 </button>
-              </div>
-              <div>
-                <DeleteAllCoinModal userid={userid || ""} />
               </div>
             </div>
             <div className="my-2 flex gap-1">
