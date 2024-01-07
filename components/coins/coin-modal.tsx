@@ -167,7 +167,7 @@ export const CoinModal = (props: ICoinModalProps) => {
             <DialogHeader>
               <DialogTitle>{coin?.name ? "Edit" : "Add"} coin</DialogTitle>
             </DialogHeader>
-            <div>
+            <div className="overscroll-y-auto">
               <Form {...form}>
                 <form onSubmit={form.handleSubmit(onSubmit)}>
                   <FormField
@@ -205,18 +205,18 @@ export const CoinModal = (props: ICoinModalProps) => {
                           <Input
                             placeholder="Enter cmc name"
                             {...field}
-                            onBlur={() => {
-                              const cmc_map = findCmcMap(
-                                form.getValues("cmc_name").trim()
-                              );
-                              if (!cmc_map?.cmc_id) {
-                                alert(
-                                  `Based on cmc name=${form.getValues(
-                                    "cmc_name"
-                                  )}, Coinmarketcap id is not found`
-                                );
-                              }
-                            }}
+                            // onBlur={() => {
+                            //   const cmc_map = findCmcMap(
+                            //     form.getValues("cmc_name").trim()
+                            //   );
+                            //   if (!cmc_map?.cmc_id) {
+                            //     alert(
+                            //       `Based on cmc name=${form.getValues(
+                            //         "cmc_name"
+                            //       )}, Coinmarketcap id is not found`
+                            //     );
+                            //   }
+                            // }}
                           />
                         </FormControl>
                         <FormMessage />

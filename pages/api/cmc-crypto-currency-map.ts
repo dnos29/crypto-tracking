@@ -10,7 +10,7 @@ export default function handler(
   const symbolSearch = (req.query.coinName as string).split('_')[0];
   const data =  CmcCryptoCurrencyMap?.data ||  [];
   const cmc_names = data
-    .filter(item => item.symbol.toLowerCase().includes(symbolSearch.toLowerCase()))
+  .filter(item => item.symbol.toLowerCase() === symbolSearch.toLowerCase())
     .map(item => item.name);
   res.status(200).json(cmc_names);
 }
