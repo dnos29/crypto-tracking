@@ -81,23 +81,21 @@ export const UploadTransactionModal = (props: IUploadTransactionModalProps) => {
                 cacheCoin[cacheCoinKey] = { coin: coins?.[0], transactions: [] };
                 const { data: tnxs } = await supabase.from('transactions')
                   .select().eq('userid', userid).eq('coin', coinId);
-                console.log('tnxs:', tnxs);
+                // console.log('tnxs:', tnxs);
                 cacheCoin[cacheCoinKey].transactions = tnxs as ITransaction[];
               } else {
                 // check cmc-crypto-currency-map
-                const cmc_map = findCmcMap(item.cmc_name);
+                const cmc_map = findCmcMap(item.cmc_id);
                 if(!cmc_map?.cmc_id || cmc_map?.cmc_id !== Number(item.cmc_id)){
-                  setLoading(false);
-                  alert(`cmc_id=${item.cmc_id} and cmc_name=${item.cmc_name} are not match`);
-                  return;
+                  throw Error(`Can not found currency map with id=${item.cmc_id}`);
                 }
                 const { data: coins, error } = await supabase.from('coins')
                   .insert({ 
                     name: item.coin_name,
-                    cmc_id: item.cmc_id,
-                    cmc_name: item.cmc_name,
-                    cmc_slug: item.cmc_slug,
-                    cmc_symbol: item.cmc_symbol,
+                    cmc_id: cmc_map.cmc_id,
+                    cmc_name: cmc_map.cmc_name,
+                    cmc_slug: cmc_map.cmc_slug,
+                    cmc_symbol: cmc_map.cmc_symbol,
                     userid,
                   })
                   .select();

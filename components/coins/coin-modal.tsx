@@ -1,5 +1,5 @@
 "use client";
-import { ICoin } from "@/interfaces";
+import { ICmcMap, ICoin } from "@/interfaces";
 import {
   Dialog,
   DialogContent,
@@ -29,6 +29,7 @@ import { findCmcMap } from "@/helpers/validator.helper";
 const coinSchema = z.object({
   name: z.string().toUpperCase().min(1),
   cmc_name: z.string().min(1),
+  cmc_id: z.number().min(1),
   total_amount: z.string().min(1),
   avg_price: z.string().min(1),
   total_invested: z.string().min(1),
@@ -41,13 +42,14 @@ interface ICoinModalProps {
 export const CoinModal = (props: ICoinModalProps) => {
   const { coin, userid } = props;
   const [openModal, setOpenModal] = useState(false);
-  const [cmcNameSuggestions, setSmcNameSuggestions] = useState<string[]>();
+  const [cmcMapSuggestions, setCmmMapSuggestions] = useState<ICmcMap[]>();
   const router = useRouter();
   const form = useForm<z.infer<typeof coinSchema>>({
     resolver: zodResolver(coinSchema),
     defaultValues: {
       name: coin?.name || "",
       cmc_name: coin?.cmc_name || "",
+      cmc_id: coin?.cmc_id || 0,
       total_amount: coin?.total_amount?.toString() || "",
       avg_price: coin?.avg_price.toString() || "",
       total_invested: coin?.total_invested?.toString() || "",
@@ -58,7 +60,7 @@ export const CoinModal = (props: ICoinModalProps) => {
       `${process.env.NEXT_PUBLIC_BASE_API}cmc-crypto-currency-map?coinName=${coin_name}`
     ).then((res) => res.json());
     if (!!data?.length) {
-      setSmcNameSuggestions(data);
+      setCmmMapSuggestions(data);
     }
   };
   const onSubmit = async (values: z.infer<typeof coinSchema>) => {
@@ -67,16 +69,16 @@ export const CoinModal = (props: ICoinModalProps) => {
       return;
     }
     // console.log('values:', values);
-    const cmc_name = values.cmc_name.trim();
-    const cmc_map = findCmcMap(cmc_name);
+    const cmc_id = values.cmc_id;
+    const cmc_map = findCmcMap(cmc_id);
     if (!cmc_map?.cmc_id) {
-      alert(`Based on cmc name=${cmc_name}, Coinmarketcap id is not found`);
+      alert(`Based on cmc name=${cmc_id}, Coinmarketcap id is not found`);
       return;
     }
     const newCoin = {
       name: values.name.trim(),
-      cmc_id: cmc_map.cmc_id,
-      cmc_name: cmc_name,
+      cmc_id: cmc_id,
+      cmc_name: cmc_map?.cmc_name,
       cmc_slug: cmc_map?.cmc_slug,
       cmc_symbol: cmc_map?.cmc_symbol,
       total_invested: Number(values.total_invested || 0),
@@ -224,21 +226,22 @@ export const CoinModal = (props: ICoinModalProps) => {
                     )}
                   />
                   {
-                    cmcNameSuggestions?.length && (
+                    cmcMapSuggestions?.length && (
                     <div>
                       <label className="text-xs text-gray-400">
                         Suggested cmc_name
                       </label>
                       <div className="flex flex-wrap gap-2">
-                        {cmcNameSuggestions?.map((cmc_name) => (
+                        {cmcMapSuggestions?.map((cmcMapSuggestion) => (
                           <>
                             <label
                               className="px-2 bg-blue-200 rounded text-sm cursor-pointer"
                               onClick={() => {
-                                form.setValue("cmc_name", cmc_name);
+                                form.setValue("cmc_name", cmcMapSuggestion.name);
+                                form.setValue("cmc_id", cmcMapSuggestion.id);
                               }}
                             >
-                              {cmc_name}
+                              {cmcMapSuggestion.id + '-' +cmcMapSuggestion.name}
                             </label>
                           </>
                         ))}

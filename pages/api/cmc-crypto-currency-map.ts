@@ -1,7 +1,8 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 import CmcCryptoCurrencyMap from '../../cmc-data/cmc-cryptocurrency-map.json';
+import { ICmcMap } from '@/interfaces';
 
-type ResponseData = string[];
+type ResponseData = ICmcMap[];
 
 export default function handler(
   req: NextApiRequest,
@@ -9,8 +10,6 @@ export default function handler(
 ) {
   const symbolSearch = (req.query.coinName as string).split('_')[0];
   const data =  CmcCryptoCurrencyMap?.data ||  [];
-  const cmc_names = data
-  .filter(item => item.symbol.toLowerCase() === symbolSearch.toLowerCase())
-    .map(item => item.name);
-  res.status(200).json(cmc_names);
+  const cmc_map: ICmcMap[] = data.filter(item => item.symbol.toLowerCase() === symbolSearch.toLowerCase());
+  res.status(200).json(cmc_map);
 }

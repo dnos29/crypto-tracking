@@ -116,9 +116,9 @@ export const csvValidator = async (items: any[], type = EValidateCsvType.Coin): 
   return validateResults;
 }
 
-export const findCmcMap = (cmc_name: string) => {
+export const findCmcMap = (cmc_id: string|number) => {
   const data: ICmcMap[] = CmcCryptoCurrencyMap?.data || [];
-  const cmc_map = data.find(item => item.name === cmc_name);
+  const cmc_map = data.find(item => item.id === Number(cmc_id || 0));
   return {
     cmc_id: cmc_map?.id,
     cmc_name: cmc_map?.name,
