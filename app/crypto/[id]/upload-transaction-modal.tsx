@@ -6,8 +6,9 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import Papa from "papaparse";
 import supabase from "@/utils/supabase";
-import { ETransactionType, EValidateCsvType, ICoin, ICoinCsv, ITransaction, ITransactionCsv } from "@/interfaces";
+import { ETransactionType, EValidateCsvType, ICoin, ITransaction } from "@/interfaces";
 import { Input } from "@/components/ui/input";
+import { Progress } from "@/components/ui/progress";
 import { convertStrToPlatFrom } from "@/helpers/string-helper";
 import { averageCoinPrice, divide } from "@/helpers/calculater-helper";
 import { csvValidator, findCmcMap } from "@/helpers/validator.helper";
@@ -19,6 +20,7 @@ interface IUploadTransactionModalProps {
 export const UploadTransactionModal = (props: IUploadTransactionModalProps) => {
   const { userid } = props;
   const [openModal, setOpenModal] = useState(false);
+  const [progress, setProgress] = useState<number>();
   const [file, setFile] = useState<File>();
   const router = useRouter();
   const [loading, setLoading] = useState(false);
@@ -28,7 +30,7 @@ export const UploadTransactionModal = (props: IUploadTransactionModalProps) => {
   } = {};
   const successedIds: number[] = [];
   const failedIdxs: { [key: string]: string }[] = [];
-  let idx = -1;
+  let idx = 0;
   const handleOnChangeFile = (event: React.ChangeEvent<HTMLInputElement>) => {
     const input = event.target as HTMLInputElement;
     if (input?.files?.length) {
@@ -63,6 +65,7 @@ export const UploadTransactionModal = (props: IUploadTransactionModalProps) => {
         let successed = 0;
         for (const item of data) {
           idx = idx + 1;
+          setProgress(Math.floor(idx/data?.length*100));
           const cacheCoinKey = item.coin_name.trim().toUpperCase() + item.cmc_id;
           let coinId = cacheCoin[cacheCoinKey]?.coin?.id;
           let newTransaction: ITransaction;
@@ -147,7 +150,7 @@ export const UploadTransactionModal = (props: IUploadTransactionModalProps) => {
         setFile(undefined);
         console.log('successedIds:', successedIds);
         console.log('failedIdxs:', failedIdxs);
-
+        setProgress(0);
       },
     });
   }
@@ -187,7 +190,11 @@ export const UploadTransactionModal = (props: IUploadTransactionModalProps) => {
                   onChange={handleOnChangeFile}
                   accept=".csv"
                 />
-
+                {
+                  !!progress && (
+                    <Progress value={progress} className="h-2" />
+                  )
+                }
                 <div className="grid">
                   <Button type="submit" disabled={loading}>Submit</Button>
                   <Button variant={'link'} onClick={() => setOpenModal(false)}>Cancel</Button>

@@ -5,6 +5,7 @@ import { CoinListing } from '@/components/coins/listing';
 import { ICoinDashboard } from '@/interfaces';
 import { profitToIcon } from '@/helpers/string-helper';
 
+const PROFIT_THRESHOLD = 1;
 export default async function Home() {
   const clerkUser = await currentUser();
   // clerkUser?.emailAddresses?.[0]?.emailAddress
@@ -23,14 +24,15 @@ export default async function Home() {
   const items: ICoinDashboard[] = coins?.map((coin) => {
     const marketPrice = marketQuote?.[coin.cmc_id.toString()]?.quote?.USD?.price;
     const estVal = marketPrice * (coin.total_amount || 0);
-    const profit = estVal - coin.total_invested;
-    const profitPercentage = coin.total_invested < 1 ? 0 :
+    const total_invested = coin.total_invested > PROFIT_THRESHOLD ? coin.total_invested : 0;
+    const profit = estVal - total_invested; // whether include total_invested < 0
+    const profitPercentage = coin.total_invested <= PROFIT_THRESHOLD ? 0 :
     (estVal - coin.total_invested) / coin.total_invested * 100 || 0;
     // tha troi: total_invested < 1,
     const coinDashboard: ICoinDashboard = {
       ...coin,
       marketPrice,
-      avg_price: coin.total_invested < 1 ? 0 : coin.avg_price,
+      avg_price: coin.total_invested <= PROFIT_THRESHOLD ? 0 : coin.avg_price,
       estVal: marketPrice * (coin.total_amount || 0),
       isProfit: coin.avg_price < marketPrice,
       profit,

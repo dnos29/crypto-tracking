@@ -5,6 +5,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { Input } from "../ui/input";
+import { Progress } from "../ui/progress";
 import Papa from "papaparse";
 import supabase from "@/utils/supabase";
 import { ICoinCsv } from "@/interfaces";
@@ -18,6 +19,7 @@ interface IUploadCoinModalProps {
 export const UploadCoinModal = (props: IUploadCoinModalProps) => {
   const {userid} = props;
   const [openModal, setOpenModal] = useState(false);
+  const [progress, setProgress] = useState<number>();
   const [file, setFile] = useState<File>();
   const router = useRouter();
   const [loading, setLoading] = useState(false);
@@ -58,6 +60,7 @@ export const UploadCoinModal = (props: IUploadCoinModalProps) => {
         let idx=0;
         for (const item of data) {
           idx++;
+          setProgress(Math.floor(idx/data?.length*100));
           try {
             console.log('Importing', item);
             const { data: coins } = await supabase.from('coins')
@@ -106,6 +109,7 @@ export const UploadCoinModal = (props: IUploadCoinModalProps) => {
             setLoading(true);
             setOpenModal(false);
             setFile(undefined);
+            setProgress(0);
           }
         };
       },
@@ -147,7 +151,11 @@ export const UploadCoinModal = (props: IUploadCoinModalProps) => {
                     onChange={handleOnChangeFile}
                     accept=".csv"
                   />
-                  
+                  {
+                    !!progress && (
+                      <Progress value={progress} className="h-2" />
+                    )
+                  }
                   <div className="grid">
                     <Button type="submit" disabled={loading}>Submit</Button>
                     <Button variant={'link'} onClick={() => setOpenModal(false)}>Cancel</Button>
