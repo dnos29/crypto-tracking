@@ -89,13 +89,21 @@ export const CoinListing = (props: ICoinListingProps) => {
         ]);
       }
       if (sortBy?.profitToIcon) {
-        if (sortBy?.profitToIcon === "asc") {
+        if (sortBy?.profitToIcon === "asc") {// use as on/off
           setDashboardItems([
             ...(dashboardItems.filter((item) => item.profitToIcon !== "") ||
               []),
           ]);
         } else {
-          setDashboardItems([...(items || [])]);
+          if (!searchTerm) {
+            setDashboardItems(items || []);
+          } else {
+            setDashboardItems([
+              ...(items?.filter((item) =>
+                item.name.toLowerCase().includes(searchTerm.toLowerCase())
+              ) || []),
+            ]);
+          }
         }
       }
     }, 500);

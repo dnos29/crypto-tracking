@@ -31,6 +31,7 @@ export default async function Home() {
     // tha troi: total_invested < 1,
     const coinDashboard: ICoinDashboard = {
       ...coin,
+      total_invested,
       marketPrice,
       avg_price: coin.total_invested <= PROFIT_THRESHOLD ? 0 : coin.avg_price,
       estVal: marketPrice * (coin.total_amount || 0),
