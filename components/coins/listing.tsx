@@ -253,7 +253,7 @@ export const CoinListing = (props: ICoinListingProps) => {
             {dashboardItems?.map((coin: any) => (
               <div key={coin.id} className="border-b-2 border-slate-100 mt-2">
                 <div className="flex justify-between">
-                  <div className="text-sm w-32 flex gap-1 items-center font-medium">
+                  <div className="text-sm flex gap-1 items-center font-medium">
                     <div>
                       {coin.name} - {formatNumber(coin.total_amount || 0, 2)}
                     </div>
