@@ -135,7 +135,7 @@ export const CoinListing = (props: ICoinListingProps) => {
           {formatNumber(totalProfitVal, 2)}
         </span>
       </p>
-      <p className="text-xs text-gray-400">Remain/Inital fund(USDT)</p>
+      <p className="text-xs text-gray-400">Remain/Inital fund(USDT)/Profit Percentage</p>
       <p className={`${profitToTextColor(remainUsdt)}`}>
         <span className={`text-2xl font-bold`}>
           {formatNumber(remainUsdt, 2)}
@@ -143,6 +143,10 @@ export const CoinListing = (props: ICoinListingProps) => {
         <span className="text-2xl"> - </span>
         <span className="text-2xl font-bold">
           {formatNumber(initialFund || 0, 2)}
+        </span>
+        <span className="text-2xl"> - </span>
+        <span className="text-2xl font-bold">
+          {formatNumber(totalProfitVal / initialFund * 100 || 0, 2)}%
         </span>
       </p>
       <div className="mt-2">
