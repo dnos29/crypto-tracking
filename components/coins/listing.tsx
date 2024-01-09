@@ -160,7 +160,7 @@ export const CoinListing = (props: ICoinListingProps) => {
           {
             !!items?.length && (
               <div>
-                <DeleteAllCoinModal userid={userid || ""} />
+                <DeleteAllCoinModal userid={userid || ""} totalCoins={items?.length} />
               </div>
             )
           }

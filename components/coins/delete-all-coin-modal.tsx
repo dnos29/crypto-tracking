@@ -9,11 +9,12 @@ import { Input } from "../ui/input";
 
 interface IDeleteAllCoinModalProps{
   userid: string,
+  totalCoins: number,
 }
 const CONFIRM_RESET = 'delete_all';
 
 export const DeleteAllCoinModal = (props: IDeleteAllCoinModalProps) => {
-  const { userid } = props;
+  const { userid, totalCoins } = props;
   const [openModal, setOpenModal] = useState(false);
   const [confirmText, setConfirmText] = useState('');
   const router = useRouter();
@@ -44,7 +45,7 @@ export const DeleteAllCoinModal = (props: IDeleteAllCoinModalProps) => {
             setOpenModal(true);
           }}
         >
-          <span>&#10008; All coins</span>
+          <span>&#10008; All {totalCoins} coins</span>
         </button>
       </DialogTrigger>
       {
