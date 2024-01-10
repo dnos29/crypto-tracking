@@ -11,6 +11,7 @@ import { Input } from "../ui/input";
 import { profitToTextColor } from "@/helpers/string-helper";
 import { UserButton } from "@clerk/clerk-react";
 import { DeleteAllCoinModal } from "./delete-all-coin-modal";
+import { sortCoinsByKey } from "@/helpers/calculater-helper";
 
 interface ICoinListingProps {
   userid?: string;
@@ -19,8 +20,17 @@ interface ICoinListingProps {
   initialFund: number;
 }
 
+const SORT_BY_KEY = 'sortBy';
+
 export const CoinListing = (props: ICoinListingProps) => {
   // const {data} = await supabase.from('coins').select().order('name', { ascending: true }); asc, desc
+  const [local] = useState(() => {
+    if(typeof window !== 'undefined'){
+      return JSON.parse(window.localStorage.getItem(SORT_BY_KEY) || "{}");
+    }
+    return {};
+  })
+  const [savedSortBy, setSavedSortBy] = useState(local);
   const [sortBy, setSortBy] = useState<{ [key: string]: "asc" | "desc" }>();
   const [searchTerm, setSearchTerm] = useState("");
   const { userid, userEmail, items, initialFund } = props;
@@ -38,7 +48,8 @@ export const CoinListing = (props: ICoinListingProps) => {
   };
   const handleSort = (key: string) => {
     const newDirection = sortBy?.[key] === "asc" ? "desc" : "asc";
-    setSortBy({
+    localStorage.setItem(SORT_BY_KEY, JSON.stringify({[key]: newDirection }));
+    setSavedSortBy({
       [key]: newDirection,
     });
     filterItems(searchTerm, {
@@ -62,15 +73,7 @@ export const CoinListing = (props: ICoinListingProps) => {
       }
       console.log(sortBy);
       if (sortBy?.name) {
-        setDashboardItems([
-          ...(dashboardItems?.sort((item1, item2) => {
-            if (sortBy?.name === "asc") {
-              return item1.name.localeCompare(item2.name);
-            } else {
-              return item2.name.localeCompare(item1.name);
-            }
-          }) || []),
-        ]);
+        setDashboardItems(sortCoinsByKey(dashboardItems, sortBy));
       }
       if (
         sortBy?.profit ||
@@ -78,31 +81,20 @@ export const CoinListing = (props: ICoinListingProps) => {
         sortBy?.total_invested
       ) {
         const key = Object.keys(sortBy)[0] as keyof ICoinDashboard;
-        setDashboardItems([
-          ...(dashboardItems?.sort((item1, item2) => {
-            if (sortBy?.[key] === "asc") {
-              return Number(item1?.[key]) - Number(item2?.[key]);
-            } else {
-              return Number(item2?.[key]) - Number(item1?.[key]);
-            }
-          }) || []),
-        ]);
+        setDashboardItems(sortCoinsByKey(dashboardItems, sortBy));
       }
       if (sortBy?.profitToIcon) {
         if (sortBy?.profitToIcon === "asc") {// use as on/off
-          setDashboardItems([
-            ...(dashboardItems.filter((item) => item.profitToIcon !== "") ||
-              []),
-          ]);
+          setDashboardItems(sortCoinsByKey(dashboardItems, sortBy));
         } else {
           if (!searchTerm) {
             setDashboardItems(items || []);
           } else {
-            setDashboardItems([
-              ...(items?.filter((item) =>
+            setDashboardItems(sortCoinsByKey(
+              items?.filter((item) =>
                 item.name.toLowerCase().includes(searchTerm.toLowerCase())
-              ) || []),
-            ]);
+              ) || [],
+            sortBy));
           }
         }
       }
@@ -110,8 +102,9 @@ export const CoinListing = (props: ICoinListingProps) => {
   };
 
   useEffect(() => {
-    filterItems(searchTerm, sortBy);
-  }, [items]);
+    setSortBy(savedSortBy);
+    sortCoinsByKey(items || [], savedSortBy);
+  }, [local, savedSortBy]);
 
   return (
     <div className="">

@@ -124,13 +124,17 @@ export default async function Page({ params }: { params: { id: string } }) {
                   <span className="text-xs text-gray-400 ml-2">{formatDate(tnx.tnx_date)}</span>
                 </div>
                 <div className="flex items-center text-sm p-2 rounded space">
-                  <div className='w-1/2'>
+                  <div className='w-1/3'>
                     <p className="text-gray-400 text-xs">Amount</p>
                     <p className="">{formatNumber(tnx.amount)}</p>
                   </div>
-                  <div className='w-1/2'>
+                  <div className='w-1/3'>
                     <p className="text-gray-400 text-xs">Price</p>
                     <p className="">{formatNumber(tnx.price_at)}</p>
+                  </div>
+                  <div className='w-1/3'>
+                    <p className="text-gray-400 text-xs">Total</p>
+                    <p className="">{formatNumber(tnx.total, 2)}</p>
                   </div>
                   <div className="w-24 text-right">
                     <p className="text-gray-400 text-xs">Actions</p>

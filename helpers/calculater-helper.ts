@@ -1,4 +1,4 @@
-import { ETransactionType, ICoin, ITransaction } from "@/interfaces";
+import { ETransactionType, ICoin, ICoinDashboard, ITransaction } from "@/interfaces";
 
 export const sum = (items: string[]): number => {
   return items.reduce((acc: number, item: string) => Number(acc || 0) + Number(item || 0), 0);
@@ -39,4 +39,39 @@ export const initialAmountInput = (tnx_type = ETransactionType.BUY, amount = 0):
     return Math.abs(amount).toString(); 
   }
   return amount.toString() || '';
+}
+
+export const sortCoinsByKey = (
+  coins: ICoinDashboard[],
+  sortBy: {[key: string]: 'asc' | 'desc'}): ICoinDashboard[] => {
+  if (sortBy?.name) {
+    return coins?.sort((item1, item2) => {
+      if (sortBy?.name === "asc") {
+        return item1.name.localeCompare(item2.name);
+      } else {
+        return item2.name.localeCompare(item1.name);
+      }
+    }) || [];
+  }
+  
+  if (
+    sortBy?.profit ||
+    sortBy?.profitPercentage ||
+    sortBy?.total_invested
+  ) {
+    const key = Object.keys(sortBy)[0] as keyof ICoinDashboard;
+    return coins?.sort((item1, item2) => {
+      if (sortBy?.[key] === "asc") {
+        return Number(item1?.[key]) - Number(item2?.[key]);
+      } else {
+        return Number(item2?.[key]) - Number(item1?.[key]);
+      }
+    }) || [];
+  }
+
+  if (sortBy?.profitToIcon && sortBy?.profitToIcon === "asc") {
+    return coins.filter((item) => item.profitToIcon !== "") || []; 
+  }
+
+  return coins;
 }

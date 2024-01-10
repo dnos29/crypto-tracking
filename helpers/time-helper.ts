@@ -1,4 +1,3 @@
-import { format } from 'date-fns';
 import { padStartStr } from './string-helper';
 
 export const formatDate = (date: string | Date) => {
