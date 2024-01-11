@@ -104,7 +104,6 @@ export const TransactionModal = (props: ITransactionModalProps) => {
       }
     }
   }
-  console.log(form.getValues('tnx_date'));
   
   return (
     <>
