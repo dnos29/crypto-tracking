@@ -43,6 +43,14 @@ export interface ICoin {
   userid: string,
 }
 
+export interface ITransactionCoin extends Omit<ITransaction, 'coin'>{
+  coin: {
+    id: string;
+    name: string;
+    cmc_name: string;
+  }
+}
+
 export interface ICoinDashboard extends ICoin {
   marketPrice: number,
   avg_price: number,

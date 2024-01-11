@@ -18,11 +18,12 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { averageCoinPrice, divide, initialAmountInput, multipe, sum } from "@/helpers/calculater-helper";
 import supabase from "@/utils/supabase";
 import { useRouter } from "next/navigation";
+import { convertDateToDateTimeLocal } from "@/helpers/time-helper";
 
 
 const transactionSchema = z.object({
   platform: z.nativeEnum(EPlatform),
-  tnx_date: z.date(),
+  tnx_date: z.string().min(1),
   type: z.nativeEnum(ETransactionType),
   amount: z.string(),
   price_at: z.string(),
@@ -43,7 +44,7 @@ export const TransactionModal = (props: ITransactionModalProps) => {
     resolver: zodResolver(transactionSchema),
     defaultValues: {
       platform: transaction?.platform || EPlatform.Okx,
-      tnx_date: transaction?.tnx_date ? new Date(transaction?.tnx_date) : new Date(),
+      tnx_date: convertDateToDateTimeLocal(transaction?.tnx_date || new Date()),
       type: transaction?.type || ETransactionType.BUY,
       amount: initialAmountInput(transaction?.type, transaction?.amount),
       price_at: transaction?.price_at.toString() || '',
@@ -58,7 +59,7 @@ export const TransactionModal = (props: ITransactionModalProps) => {
     // default is Buy
     const newTransaction: ITransaction = {
       platform: values.platform,
-      tnx_date: values.tnx_date.toISOString(),
+      tnx_date: new Date(values.tnx_date).toISOString(),
       type: values.type,
       amount: Math.abs(Number(values.amount)),
       price_at: divide(Math.abs(Number(values.total)), Math.abs(Number(values.amount))),
@@ -103,6 +104,8 @@ export const TransactionModal = (props: ITransactionModalProps) => {
       }
     }
   }
+  console.log(form.getValues('tnx_date'));
+  
   return (
     <>
       <Dialog>
@@ -134,41 +137,23 @@ export const TransactionModal = (props: ITransactionModalProps) => {
             </DialogHeader>
             <Form {...form}>
               <form onSubmit={form.handleSubmit(onSubmit)}>
-                <FormField
+              <FormField
                   control={form.control}
                   name="tnx_date"
                   render={({ field }) => (
-                    <FormItem className="flex flex-col mt-0.5">
-                      <FormLabel>Transaction date</FormLabel>
-                      <Popover>
-                        <PopoverTrigger asChild>
-                          <FormControl>
-                            <Button
-                              variant={"outline"}
-                              className={cn(
-                                "pl-3 text-left font-normal",
-                                !field.value && "text-muted-foreground"
-                              )}
-                            >
-                              {field.value ? (
-                                format(field.value, "PPP")
-                              ) : (
-                                <span>Pick a date</span>
-                              )}
-                              <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                            </Button>
-                          </FormControl>
-                        </PopoverTrigger>
-                        <PopoverContent className="w-auto p-0" align="start">
-                          <Calendar
-                            mode="single"
-                            selected={field.value}
-                            onSelect={field.onChange}
-                            initialFocus
-                            defaultMonth={field.value|| undefined}
-                          />
-                        </PopoverContent>
-                      </Popover>
+                    <FormItem className="mt-2">
+                      <FormLabel>Total</FormLabel>
+                      <FormControl>
+                        <Input
+                          type="datetime-local"
+                          placeholder="Enter tnx date"
+                          value={form.getValues('tnx_date')}
+                          onChange={(e) => {
+                            form.setValue('tnx_date', e.target.value);
+                        }}
+                        />
+                      </FormControl>
+                      <FormMessage />
                     </FormItem>
                   )}
                 />

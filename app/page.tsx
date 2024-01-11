@@ -11,7 +11,7 @@ export default async function Home() {
   // clerkUser?.emailAddresses?.[0]?.emailAddress
   const {data: users, error} = await supabase.from('users').select().eq('userid', clerkUser?.id).limit(1);
   
-  const { data: coins } = await supabase.from('coins').select().eq('userid', clerkUser?.id).order('name', { ascending: true });;
+  const { data: coins } = await supabase.from('coins').select().eq('userid', clerkUser?.id).order('name', { ascending: true });
   const allCmcIds = coins?.map((coin) => (coin?.cmc_id));
   const { data: marketQuote } = await fetch(`https://pro-api.coinmarketcap.com/v2/cryptocurrency/quotes/latest?id=${allCmcIds?.join(',')}&convert=USD&aux=is_active`, {
     mode: 'cors',

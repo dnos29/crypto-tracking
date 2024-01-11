@@ -108,10 +108,6 @@ export const CoinListing = (props: ICoinListingProps) => {
 
   return (
     <div className="">
-      <div className="flex gap-2 items-center">
-        <UserButton />
-        <p>Hi {userEmail}!</p>
-      </div>
       <p className="text-xs	mt-4 text-gray-400">
         Est total/total+remain/profit value (USDT)
       </p>
