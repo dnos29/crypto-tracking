@@ -51,7 +51,7 @@ export const CoinModal = (props: ICoinModalProps) => {
       cmc_name: coin?.cmc_name || "",
       cmc_id: coin?.cmc_id || 0,
       total_amount: coin?.total_amount?.toString() || "",
-      avg_price: coin?.avg_price.toString() || "",
+      avg_price: coin?.avg_price?.toString() || "",
       total_invested: coin?.total_invested?.toString() || "",
     },
   });
