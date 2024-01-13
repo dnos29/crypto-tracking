@@ -4,12 +4,15 @@ import Link from 'next/link';
 import { UserButton } from '@clerk/nextjs';
 import { CoinsDownload } from './coins/coins-download';
 import { TransactionsDownload } from '@/app/crypto/[id]/transactions-download';
+import supabase from '@/utils/supabase';
 
 interface IHeaderProps{
   clerkUser?: any;
 }
-export const Header = (props: IHeaderProps) => {
+
+export const Header = async (props: IHeaderProps) => {
   const {clerkUser} = props;
+  const {data: user} = await supabase.from('users').select().eq('userid', clerkUser?.id).single();
 
   return (
     <div className="flex gap-2 items-center justify-between">
@@ -27,22 +30,28 @@ export const Header = (props: IHeaderProps) => {
         </DropdownMenuTrigger>
         <DropdownMenuContent className="w-56">
           <Link href={`/`}>
-            <DropdownMenuItem className='pointer-cursor'>
+            <DropdownMenuItem className='cursor-pointer'>
               Home
             </DropdownMenuItem>
           </Link>
-          <Link href={`/transactions`}>
-            <DropdownMenuItem className='pointer-cursor'>
+          <Link href={`/user/${user.id}/transactions`}>
+            <DropdownMenuItem className='cursor-pointer'>
               Recent transactions
             </DropdownMenuItem>
           </Link>
           <DropdownMenuSeparator />
-          <DropdownMenuItem className='pointer-cursor'>
+          <DropdownMenuItem className='cursor-pointer'>
             <CoinsDownload userid={clerkUser?.id}/>
           </DropdownMenuItem>
-          <DropdownMenuItem className='pointer-cursor'>
+          <DropdownMenuItem className='cursor-pointer'>
             <TransactionsDownload userid={clerkUser?.id}/>
           </DropdownMenuItem>
+          <DropdownMenuSeparator />
+          <Link href={`/user/${user?.id}/settings`} className='cursor-pointer'>
+            <DropdownMenuItem className='cursor-pointer'>
+              User settings
+            </DropdownMenuItem>
+          </Link>
         </DropdownMenuContent>
       </DropdownMenu>
     </div>

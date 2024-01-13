@@ -8,6 +8,7 @@ import { DeleteTransactionModal } from "./delete-transaction-modal";
 import { formatNumber } from "@/helpers/number-helper";
 import { UploadTransactionModal } from './upload-transaction-modal';
 import { DeleteAllTransactionModal } from "./delete-all-transaction";
+import { HeaderPage } from "@/components/header.page";
 export const revalidate = 0
 
 
@@ -39,12 +40,7 @@ export default async function Page({ params }: { params: { id: string } }) {
   const estVal = totalAmount * marketPrice;
   return (
     <>
-      <div className="grid grid-row-3 grid-flow-col gap-2 items-center">
-        <div className="w-14 text-left">
-          <Link href={'/'}>
-            <button className="text-sm text-gray-400">&#9664; Back</button>
-          </Link>
-        </div>
+      <HeaderPage>
         <p className="text-center uppercase">
           {formatNumber(totalAmount, 2)} {coin.name}
           <br />
@@ -52,8 +48,7 @@ export default async function Page({ params }: { params: { id: string } }) {
             {coin.cmc_name}
           </span>
         </p>
-        <div className="w-14"></div>
-      </div>
+      </HeaderPage>
       <div className='w-full'>
         <div className="flex p-2 gap-2 mt-2">
           <div className='w-1/2 text-center'>

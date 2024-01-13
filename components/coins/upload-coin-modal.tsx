@@ -137,7 +137,7 @@ export const UploadCoinModal = (props: IUploadCoinModalProps) => {
                   Please upload .csv file to import coins.
                   <br></br>
                   <a 
-                    href="https://drive.google.com/file/d/10IKbGk0994fZNSyyXcRBj5W06ocjZpxz/view?usp=sharing"
+                    href="https://docs.google.com/spreadsheets/d/1kTsC0E5eK4lPiuA_fmzu54qIV_-bjFylvJCtY30-6eA/edit?usp=sharing"
                     target="_blank"
                     className="text-teal-500"
                   > 

@@ -103,6 +103,7 @@ export enum EPercentageProfitFormula{
 
 export interface IUser{
   id: number;
+  name?: string;
   initial_fund: number;
   userid: string;
   noti_sell: string;
