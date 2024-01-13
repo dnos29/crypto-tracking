@@ -24,7 +24,6 @@ export default async function RootLayout({
         <body className={inter.className}>
           <TanstackProvider>
             <main className='max-w-2xl mx-auto my-0 pl-2 pr-4 py-4 relative'>
-              {/* @ts-expect-error Server Component */}
               <Header clerkUser={clerkUser} />
               {children}
             </main>
