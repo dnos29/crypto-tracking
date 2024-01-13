@@ -1,14 +1,15 @@
 
-import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from '@/components/ui/dropdown-menu';
+import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator } from '@/components/ui/dropdown-menu';
 import Link from 'next/link';
 import { UserButton } from '@clerk/nextjs';
+import { CoinsDownload } from './coins/coins-download';
+import { TransactionsDownload } from '@/app/crypto/[id]/transactions-download';
 
 interface IHeaderProps{
   clerkUser?: any;
 }
 export const Header = (props: IHeaderProps) => {
   const {clerkUser} = props;
-  // const { user } = useUser();
 
   return (
     <div className="flex gap-2 items-center justify-between">
@@ -35,6 +36,13 @@ export const Header = (props: IHeaderProps) => {
               Recent transactions
             </DropdownMenuItem>
           </Link>
+          <DropdownMenuSeparator />
+          <DropdownMenuItem className='pointer-cursor'>
+            <CoinsDownload userid={clerkUser?.id}/>
+          </DropdownMenuItem>
+          <DropdownMenuItem className='pointer-cursor'>
+            <TransactionsDownload userid={clerkUser?.id}/>
+          </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
     </div>
