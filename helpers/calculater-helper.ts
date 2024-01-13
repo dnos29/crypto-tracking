@@ -1,4 +1,5 @@
-import { ETransactionType, ICoin, ICoinDashboard, ITransaction } from "@/interfaces";
+import { EPercentageProfitFormula, ETransactionType, ICoin, ICoinDashboard, ITransaction } from "@/interfaces";
+import { PROFIT_THRESHOLD } from "@/shared/constants";
 
 export const sum = (items: string[]): number => {
   return items.reduce((acc: number, item: string) => Number(acc || 0) + Number(item || 0), 0);
@@ -74,4 +75,22 @@ export const sortCoinsByKey = (
   }
 
   return coins;
+}
+
+export const percentageProfit = (
+  percentageProfitFormula = EPercentageProfitFormula.NORMAL,
+  total_invested: number,
+  estVal: number
+) => {
+  // console.log('percentageProfitFormula', percentageProfitFormula);
+  // Floating
+  if(total_invested <= PROFIT_THRESHOLD){
+    return 0;
+  }
+  // loss
+  if(total_invested > estVal && percentageProfitFormula === EPercentageProfitFormula.VEBO){
+    return (1 - total_invested / estVal) * 100;
+  }
+  // default
+  return (estVal - total_invested) / total_invested * 100;
 }

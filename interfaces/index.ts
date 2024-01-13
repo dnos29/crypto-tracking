@@ -95,3 +95,16 @@ export interface ICmcMap {
   last_historical_data: string
   platform: any
 }
+
+export enum EPercentageProfitFormula{
+  NORMAL = 'normal',
+  VEBO = 'vebo'
+}
+
+export interface IUser{
+  id: number;
+  initial_fund: number;
+  userid: string;
+  noti_sell: string;
+  percentage_profit_formula?: EPercentageProfitFormula;
+}

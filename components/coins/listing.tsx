@@ -9,9 +9,9 @@ import { UploadTransactionModal } from "@/app/crypto/[id]/upload-transaction-mod
 import { useEffect, useState } from "react";
 import { Input } from "../ui/input";
 import { profitToTextColor } from "@/helpers/string-helper";
-import { UserButton } from "@clerk/clerk-react";
 import { DeleteAllCoinModal } from "./delete-all-coin-modal";
 import { sortCoinsByKey } from "@/helpers/calculater-helper";
+import { PROFIT_THRESHOLD } from "@/shared/constants";
 
 interface ICoinListingProps {
   userid?: string;
@@ -265,7 +265,7 @@ export const CoinListing = (props: ICoinListingProps) => {
                       / {formatNumber(coin.estVal, 2)}
                     </p>
                     <p className={profitToTextColor(coin.profit)}>
-                      {coin.total_invested < 1 ? (
+                      {coin.total_invested < PROFIT_THRESHOLD ? (
                         <>{formatNumber(coin.profit, 2)} / -</>
                       ) : (
                         <>
