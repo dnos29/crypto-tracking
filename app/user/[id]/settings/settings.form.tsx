@@ -77,15 +77,15 @@ export const SettingsForm = (props: ISettingsFormProps) => {
             name="noti_sell"
             render={({ field }) => (
               <FormItem className="mt-2">
-                <FormLabel>Notification sell</FormLabel>
+                <FormLabel>Hightlight</FormLabel>
                 <FormControl>
                   <Input
-                    placeholder="Enter notification sell"
+                    placeholder="Enter hightlight settings"
                     {...field}
                   />
                 </FormControl>
                 <FormDescription>
-                  Input multile notification settings. Each notification settings includes 3 parts: field, comparator, value(number), splited by | character.
+                  Input multile hightlight settings. Each hightlight settings includes 3 parts: field, comparator, value(number), splited by | character.
                   List field: marketPrice, avg_price, estVal, isProfit, profit, profitPercentage. Comparators: gt,gte,lt,lte,eq(=).
                   Ex input value: profit|gte|100,profitPercentage|gte|30
                 </FormDescription>

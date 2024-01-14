@@ -6,13 +6,13 @@ interface IHeaderPageProps{
 export const HeaderPage = ({children}: IHeaderPageProps) => {
   return (
     <div className="grid grid-row-3 grid-flow-col gap-2 items-center my-4">
-      <div className="text-left">
+      <div className="text-left w-16">
         <Link href={'/'}>
           <button className="text-sm text-gray-400">&#9664; Home</button>
         </Link>
       </div>
       {children}
-      <div className=""></div>
+      <div className="w-16"></div>
     </div>
   )
 }
