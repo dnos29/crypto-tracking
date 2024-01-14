@@ -18,7 +18,10 @@ export const Header = async (props: IHeaderProps) => {
     <div className="flex gap-2 items-center justify-between">
       <div className="flex gap-2 items-center">
         <UserButton />
-        <p>Hi {clerkUser?.emailAddresses?.[0]?.emailAddress.split('@')?.[0]}!</p>
+        <p>Hi {
+          !!user 
+          ? user?.name 
+          : clerkUser?.emailAddresses?.[0]?.emailAddress.split('@')?.[0]}!</p>
       </div>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
