@@ -19,8 +19,8 @@ export const Header = async (props: IHeaderProps) => {
       <div className="flex gap-2 items-center">
         <UserButton />
         <p>Hi {
-          !!user 
-          ? user?.name 
+          (clerkUser?.first_name && clerkUser?.last_name)
+          ? (clerkUser?.first_name +  ' ' + clerkUser?.last_name)
           : clerkUser?.emailAddresses?.[0]?.emailAddress.split('@')?.[0]}!</p>
       </div>
       <DropdownMenu>
@@ -37,24 +37,30 @@ export const Header = async (props: IHeaderProps) => {
               Home
             </DropdownMenuItem>
           </Link>
-          <Link href={`/user/${user.id}/transactions`}>
-            <DropdownMenuItem className='cursor-pointer'>
-              Recent transactions
-            </DropdownMenuItem>
-          </Link>
-          <DropdownMenuSeparator />
-          <DropdownMenuItem className='cursor-pointer'>
-            <CoinsDownload userid={clerkUser?.id}/>
-          </DropdownMenuItem>
-          <DropdownMenuItem className='cursor-pointer'>
-            <TransactionsDownload userid={clerkUser?.id}/>
-          </DropdownMenuItem>
-          <DropdownMenuSeparator />
-          <Link href={`/user/${user?.id}/settings`} className='cursor-pointer'>
-            <DropdownMenuItem className='cursor-pointer'>
-              User settings
-            </DropdownMenuItem>
-          </Link>
+          {
+            !!user && (
+              <>
+                <Link href={`/user/${user?.id}/transactions`}>
+                  <DropdownMenuItem className='cursor-pointer'>
+                    Recent transactions
+                  </DropdownMenuItem>
+                </Link>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem className='cursor-pointer'>
+                  <CoinsDownload userid={clerkUser?.id}/>
+                </DropdownMenuItem>
+                <DropdownMenuItem className='cursor-pointer'>
+                  <TransactionsDownload userid={clerkUser?.id}/>
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <Link href={`/user/${user?.id}/settings`} className='cursor-pointer'>
+                  <DropdownMenuItem className='cursor-pointer'>
+                    User settings
+                  </DropdownMenuItem>
+                </Link>
+              </>
+            )
+          }
         </DropdownMenuContent>
       </DropdownMenu>
     </div>

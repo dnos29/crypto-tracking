@@ -36,6 +36,7 @@ export default async function handler(
   }
   const {error} = await supabase.from('users').insert({
     userid: data?.id,
+    name: data?.first_name + ' ' + data?.last_name
   })
   if(error){
     res.status(404).json({ message: 'Create user unsuccessfully' });

@@ -20,12 +20,10 @@ interface ISettingsFormProps{
 }
 export const SettingsForm = (props: ISettingsFormProps) => {
   const {user} = props;
-  console.log(user?.noti_sell);
   
   const form = useForm<z.infer<typeof userSchema>>({
     resolver: zodResolver(userSchema),
     defaultValues: {
-      name: user?.name || '',
       initial_fund: user?.initial_fund || 0,
       noti_sell: user?.noti_sell || '',
       percentage_profit_formula: user?.percentage_profit_formula || EPercentageProfitFormula.NORMAL,
@@ -35,7 +33,6 @@ export const SettingsForm = (props: ISettingsFormProps) => {
   const onSubmit = async (values: z.infer<typeof userSchema>) => {
     const {data, error} = await supabase.from('users')
       .update({
-        name: values.name,
         initial_fund: values.initial_fund,
         noti_sell: values.noti_sell,
         percentage_profit_formula: values.percentage_profit_formula,
@@ -58,22 +55,6 @@ export const SettingsForm = (props: ISettingsFormProps) => {
     <>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)}>
-          <FormField
-            control={form.control}
-            name="name"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Name</FormLabel>
-                <FormControl>
-                  <Input
-                    placeholder="What's your name?"
-                    {...field}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
           <FormField
             control={form.control}
             name="initial_fund"
