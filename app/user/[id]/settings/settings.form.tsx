@@ -6,11 +6,11 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { EPercentageProfitFormula, IUser } from "@/interfaces";
 import supabase from "@/utils/supabase";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
 const userSchema = z.object({
-  name: z.string(),
   initial_fund: z.coerce.number().min(0),
   noti_sell: z.string(),
   percentage_profit_formula: z.string(),
@@ -20,7 +20,7 @@ interface ISettingsFormProps{
 }
 export const SettingsForm = (props: ISettingsFormProps) => {
   const {user} = props;
-  
+  const router = useRouter();
   const form = useForm<z.infer<typeof userSchema>>({
     resolver: zodResolver(userSchema),
     defaultValues: {
@@ -40,8 +40,10 @@ export const SettingsForm = (props: ISettingsFormProps) => {
       .eq('userid', user?.userid);
     console.log('data', data);
     if(!!error){
+      router.refresh();
       alert('Update unsuccessfully');
     }
+    router.refresh();
     alert('Saved successfully');
   }
 
