@@ -37,6 +37,8 @@ export const CoinListing = (props: ICoinListingProps) => {
   const [dashboardItems, setDashboardItems] = useState(items || []);
   const totalProfitVal =
     items?.reduce((acc, coin) => acc + coin.profit, 0) || 0;
+  const totalLostVal =
+    items?.filter(coin => coin.profit < 0)?.reduce((acc, coin) => acc + coin.profit, 0) || 0;
   const totalEstVal = items?.reduce((acc, coin) => acc + coin.estVal, 0) || 0;
   const totalInvested =
     items?.reduce((acc, coin) => acc + coin.total_invested, 0) || 0;
@@ -124,18 +126,22 @@ export const CoinListing = (props: ICoinListingProps) => {
           {formatNumber(totalProfitVal, 2)}
         </span>
       </p>
-      <p className="text-xs text-gray-400">Remain/Inital fund(USDT)/Profit Percentage</p>
+      <p className="text-xs text-gray-400">Remain/Inital fund(USDT)/Profit Percentage/Total lost</p>
       <p className={`${profitToTextColor(remainUsdt)}`}>
         <span className={`text-2xl font-bold`}>
           {formatNumber(remainUsdt, 2)}
         </span>
         <span className="text-2xl"> - </span>
-        <span className="text-2xl font-bold">
+        <span className={`text-2xl font-bold`}>
           {formatNumber(initialFund || 0, 2)}
         </span>
         <span className="text-2xl"> - </span>
-        <span className="text-2xl font-bold">
+        <span className={`text-2xl font-bold  ${profitToTextColor(totalProfitVal)}`}>
           {formatNumber(totalProfitVal / initialFund * 100 || 0, 2)}%
+        </span>
+        <span className="text-2xl"> - </span>
+        <span className={`text-2xl font-bold  ${profitToTextColor(totalLostVal)}`}>
+          {formatNumber((0 - totalLostVal), 2)}
         </span>
       </p>
       <div className="mt-2">
