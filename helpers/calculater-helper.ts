@@ -58,7 +58,8 @@ export const sortCoinsByKey = (
   if (
     sortBy?.profit ||
     sortBy?.profitPercentage ||
-    sortBy?.total_invested
+    sortBy?.total_invested || 
+    sortBy?.estVal
   ) {
     const key = Object.keys(sortBy)[0] as keyof ICoinDashboard;
     return coins?.sort((item1, item2) => {

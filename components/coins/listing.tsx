@@ -80,7 +80,8 @@ export const CoinListing = (props: ICoinListingProps) => {
       if (
         sortBy?.profit ||
         sortBy?.profitPercentage ||
-        sortBy?.total_invested
+        sortBy?.total_invested ||
+        sortBy?.estVal
       ) {
         const key = Object.keys(sortBy)[0] as keyof ICoinDashboard;
         setDashboardItems(sortCoinsByKey(dashboardItems, sortBy));
@@ -221,6 +222,20 @@ export const CoinListing = (props: ICoinListingProps) => {
                     <span className="text-sm">&#9650;</span>
                   )}
                   {sortBy?.total_invested == "asc" && (
+                    <span className="text-sm">&#9660;</span>
+                  )}
+                </button>
+              </div>
+              <div className="">
+                <button
+                  className=" px-2 text-sm bg-blue-200 rounded"
+                  onClick={() => handleSort("estVal")}
+                >
+                  Estimated value
+                  {sortBy?.estVal == "desc" && (
+                    <span className="text-sm">&#9650;</span>
+                  )}
+                  {sortBy?.estVal == "asc" && (
                     <span className="text-sm">&#9660;</span>
                   )}
                 </button>
