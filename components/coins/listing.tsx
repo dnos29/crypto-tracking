@@ -265,7 +265,13 @@ export const CoinListing = (props: ICoinListingProps) => {
                 <div className="flex justify-between">
                   <div className="text-sm flex gap-1 items-center font-medium">
                     <div>
-                      {coin.name} - {formatNumber(coin.total_amount || 0, 2)}
+                      <Link
+                        href={`https://coinmarketcap.com/currencies/${coin.cmc_name}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        {coin.name} - {formatNumber(coin.total_amount || 0, 2)}
+                      </Link>
                     </div>
                     <div>{coin.profitToIcon}</div>
                   </div>
