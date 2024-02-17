@@ -44,7 +44,20 @@ export const initialAmountInput = (tnx_type = ETransactionType.BUY, amount = 0):
 
 export const sortCoinsByKey = (
   coins: ICoinDashboard[],
-  sortBy: {[key: string]: 'asc' | 'desc'}): ICoinDashboard[] => {
+  sortBy?: {[key: string]: 'asc' | 'desc'},
+  name?: string,
+): ICoinDashboard[] => {
+  const hideBlank = localStorage.getItem('hideBlankCoin') === 'true';
+  if(!!hideBlank){
+    coins = coins.filter(item => {
+      return item.total_amount >= 1;
+    })
+  }
+  if(!!name){
+    coins = coins.filter(item => {
+      return item.name.toLowerCase().includes(name.toLowerCase());
+    })
+  }
   if (sortBy?.name) {
     return coins?.sort((item1, item2) => {
       if (sortBy?.name === "asc") {

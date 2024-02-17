@@ -21,6 +21,7 @@ interface ICoinListingProps {
 }
 
 const SORT_BY_KEY = 'sortBy';
+const HIDE_BLANK_COIN_KEY = 'hideBlankCoin';
 
 export const CoinListing = (props: ICoinListingProps) => {
   // const {data} = await supabase.from('coins').select().order('name', { ascending: true }); asc, desc
@@ -30,8 +31,17 @@ export const CoinListing = (props: ICoinListingProps) => {
     }
     return {};
   })
+  const [hideBlankCoinLocal] = useState(() => {
+    // return typeof window !== 'undefined' && window?.localStorage?.getItem(HIDE_BLANK_COIN_KEY) === "true";
+    if(typeof window !== 'undefined'){
+      return window.localStorage.getItem(HIDE_BLANK_COIN_KEY) == "true";
+    }
+    return false;
+  })
   const [savedSortBy, setSavedSortBy] = useState(local);
   const [sortBy, setSortBy] = useState<{ [key: string]: "asc" | "desc" }>();
+  const [savedHideBlankCoins, setSavedHideBlankCoins] = useState(hideBlankCoinLocal);
+  const [hideBlankCoins, setHideBlankCoins] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const { userid, userEmail, items, initialFund } = props;
   const [dashboardItems, setDashboardItems] = useState(items || []);
@@ -43,6 +53,7 @@ export const CoinListing = (props: ICoinListingProps) => {
   const totalInvested =
     items?.reduce((acc, coin) => acc + coin.total_invested, 0) || 0;
   const remainUsdt = initialFund - totalInvested;
+  const blankCoins = items?.filter(item => item.total_amount < 1)?.length || 0;
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     const term = e?.target?.value;
     setSearchTerm(term);
@@ -59,55 +70,25 @@ export const CoinListing = (props: ICoinListingProps) => {
     });
   };
 
+  const handleHideBlank = () => {
+    setSavedHideBlankCoins(!hideBlankCoins);
+    localStorage.setItem(HIDE_BLANK_COIN_KEY, (!hideBlankCoins).toString());
+    setDashboardItems(sortCoinsByKey(items || [], savedSortBy, searchTerm));
+  }
   const filterItems = (
     name: string,
     sortBy?: { [key: string]: "asc" | "desc" }
   ) => {
     setTimeout(() => {
-      if (name === "") {
-        setDashboardItems(items || []);
-      } else {
-        setDashboardItems([
-          ...(items?.filter((item) =>
-            item.name.toLowerCase().includes(name.toLowerCase())
-          ) || []),
-        ]);
-      }
-      console.log(sortBy);
-      if (sortBy?.name) {
-        setDashboardItems(sortCoinsByKey(dashboardItems, sortBy));
-      }
-      if (
-        sortBy?.profit ||
-        sortBy?.profitPercentage ||
-        sortBy?.total_invested ||
-        sortBy?.estVal
-      ) {
-        const key = Object.keys(sortBy)[0] as keyof ICoinDashboard;
-        setDashboardItems(sortCoinsByKey(dashboardItems, sortBy));
-      }
-      if (sortBy?.profitToIcon) {
-        if (sortBy?.profitToIcon === "asc") {// use as on/off
-          setDashboardItems(sortCoinsByKey(dashboardItems, sortBy));
-        } else {
-          if (!searchTerm) {
-            setDashboardItems(items || []);
-          } else {
-            setDashboardItems(sortCoinsByKey(
-              items?.filter((item) =>
-                item.name.toLowerCase().includes(searchTerm.toLowerCase())
-              ) || [],
-            sortBy));
-          }
-        }
-      }
+      sortCoinsByKey(dashboardItems, sortBy, name);
     }, 500);
   };
 
   useEffect(() => {
     setSortBy(savedSortBy);
-    sortCoinsByKey(items || [], savedSortBy);
-  }, [local, savedSortBy]);
+    setHideBlankCoins(savedHideBlankCoins);
+    setDashboardItems(sortCoinsByKey(items || [], savedSortBy));
+  }, [local, savedSortBy, savedHideBlankCoins]);
 
   return (
     <div className="">
@@ -239,6 +220,16 @@ export const CoinListing = (props: ICoinListingProps) => {
                     <span className="text-sm">&#9660;</span>
                   )}
                 </button>
+              </div>
+              <div className="">
+                <abbr title={`Trading: ${items.length - blankCoins} coins`}>
+                  <button
+                    className=" px-2 text-sm bg-blue-200 rounded"
+                    onClick={() => handleHideBlank()}
+                  >
+                    <span>{hideBlankCoins && <>&#10004;</>} Hide {blankCoins} blank</span>
+                  </button>
+                </abbr>
               </div>
               <div className="">
                 <button
