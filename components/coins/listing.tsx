@@ -232,16 +232,20 @@ export const CoinListing = (props: ICoinListingProps) => {
                           )}
                         </button>
                       </div>
-                      <div className="">
-                        <abbr title={`Trading: ${items.length - blankCoins} coins`}>
-                          <button
-                            className=" px-2 text-sm bg-blue-200 rounded"
-                            onClick={() => handleHideBlank()}
-                          >
-                            <span>{hideBlankCoins && <>&#10004;</>} Hide {blankCoins} blank</span>
-                          </button>
-                        </abbr>
-                      </div>
+                      {
+                        !!blankCoins && (
+                          <div className="">
+                            <abbr title={`Trading: ${items.length - blankCoins} coins`}>
+                              <button
+                                className=" px-2 text-sm bg-blue-200 rounded"
+                                onClick={() => handleHideBlank()}
+                              >
+                                <span>{hideBlankCoins && <>&#10004;</>} Hide {blankCoins} blank</span>
+                              </button>
+                            </abbr>
+                          </div>
+                        )
+                      }
                       <div className="">
                         <button
                           className=" px-2 text-sm bg-blue-200 rounded"
