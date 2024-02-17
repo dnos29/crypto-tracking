@@ -12,6 +12,7 @@ import { profitToTextColor } from "@/helpers/string-helper";
 import { DeleteAllCoinModal } from "./delete-all-coin-modal";
 import { sortCoinsByKey } from "@/helpers/calculater-helper";
 import { PROFIT_THRESHOLD } from "@/shared/constants";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "../ui/accordion";
 
 interface ICoinListingProps {
   userid?: string;
@@ -54,10 +55,9 @@ export const CoinListing = (props: ICoinListingProps) => {
     items?.reduce((acc, coin) => acc + coin.total_invested, 0) || 0;
   const remainUsdt = initialFund - totalInvested;
   const blankCoins = items?.filter(item => item.total_amount < 1)?.length || 0;
-  const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const term = e?.target?.value;
+  const handleSearch = (term: string) => {
     setSearchTerm(term);
-    filterItems(term);
+    filterItems(term, JSON.parse(localStorage.getItem(SORT_BY_KEY)|| "{}"));
   };
   const handleSort = (key: string) => {
     const newDirection = sortBy?.[key] === "asc" ? "desc" : "asc";
@@ -80,7 +80,7 @@ export const CoinListing = (props: ICoinListingProps) => {
     sortBy?: { [key: string]: "asc" | "desc" }
   ) => {
     setTimeout(() => {
-      sortCoinsByKey(dashboardItems, sortBy, name);
+      setDashboardItems(sortCoinsByKey(items || [], sortBy, name));
     }, 500);
   };
 
@@ -127,128 +127,153 @@ export const CoinListing = (props: ICoinListingProps) => {
         </span>
       </p>
       <div className="mt-2">
-        <p className="text-xs text-gray-400">Assets</p>
-        <div className="flex flex-wrap gap-2">
-          <div>
-            <CoinModal userid={userid || ""} />
-          </div>
-          <div>
-            <UploadCoinModal userid={userid || ""} />
-          </div>
-          <div>
-            <UploadTransactionModal userid={userid || ""} />
-          </div>
-          {
-            !!items?.length && (
-              <div>
-                <DeleteAllCoinModal userid={userid || ""} totalCoins={items?.length} />
+        <Accordion type="single" collapsible>
+          <AccordionItem value="item-1">
+            <AccordionTrigger className="py-1">
+              <p className="text-xs text-gray-400">Assets</p>
+            </AccordionTrigger>
+            <AccordionContent className="pb-2">
+              <div className="flex flex-wrap gap-2">
+                <div>
+                  <CoinModal userid={userid || ""} />
+                </div>
+                <div>
+                  <UploadCoinModal userid={userid || ""} />
+                </div>
+                <div>
+                  <UploadTransactionModal userid={userid || ""} />
+                </div>
+                {
+                  !!items?.length && (
+                    <div>
+                      <DeleteAllCoinModal userid={userid || ""} totalCoins={items?.length} />
+                    </div>
+                  )
+                }
               </div>
-            )
-          }
-        </div>
-        {
-          !!items?.length && (
-          <>
-            <p className="text-xs text-gray-400">Sort by</p>
-            <div className="flex flex-wrap gap-2">
-              <div className="">
-                <button
-                  className=" px-2 text-sm bg-blue-200 rounded"
-                  onClick={() => handleSort("name")}
-                >
-                  Name{" "}
-                  {sortBy?.name == "desc" && (
-                    <span className="text-sm">&#9650;</span>
-                  )}{" "}
-                  {sortBy?.name == "asc" && (
-                    <span className="text-sm">&#9660;</span>
-                  )}
-                </button>
-              </div>
-              <div className="">
-                <button
-                  className=" px-2 text-sm bg-blue-200 rounded"
-                  onClick={() => handleSort("profit")}
-                >
-                  Profit{" "}
-                  {sortBy?.profit == "desc" && (
-                    <span className="text-sm">&#9650;</span>
-                  )}{" "}
-                  {sortBy?.profit == "asc" && (
-                    <span className="text-sm">&#9660;</span>
-                  )}
-                </button>
-              </div>
-              <div className="">
-                <button
-                  className=" px-2 text-sm bg-blue-200 rounded"
-                  onClick={() => handleSort("profitPercentage")}
-                >
-                  Percentage{" "}
-                  {sortBy?.profitPercentage == "desc" && (
-                    <span className="text-sm">&#9650;</span>
-                  )}{" "}
-                  {sortBy?.profitPercentage == "asc" && (
-                    <span className="text-sm">&#9660;</span>
-                  )}
-                </button>
-              </div>
-              <div className="">
-                <button
-                  className=" px-2 text-sm bg-blue-200 rounded"
-                  onClick={() => handleSort("total_invested")}
-                >
-                  Total invested
-                  {sortBy?.total_invested == "desc" && (
-                    <span className="text-sm">&#9650;</span>
-                  )}
-                  {sortBy?.total_invested == "asc" && (
-                    <span className="text-sm">&#9660;</span>
-                  )}
-                </button>
-              </div>
-              <div className="">
-                <button
-                  className=" px-2 text-sm bg-blue-200 rounded"
-                  onClick={() => handleSort("estVal")}
-                >
-                  Estimated value
-                  {sortBy?.estVal == "desc" && (
-                    <span className="text-sm">&#9650;</span>
-                  )}
-                  {sortBy?.estVal == "asc" && (
-                    <span className="text-sm">&#9660;</span>
-                  )}
-                </button>
-              </div>
-              <div className="">
-                <abbr title={`Trading: ${items.length - blankCoins} coins`}>
-                  <button
-                    className=" px-2 text-sm bg-blue-200 rounded"
-                    onClick={() => handleHideBlank()}
-                  >
-                    <span>{hideBlankCoins && <>&#10004;</>} Hide {blankCoins} blank</span>
-                  </button>
-                </abbr>
-              </div>
-              <div className="">
-                <button
-                  className=" px-2 text-sm bg-blue-200 rounded"
-                  onClick={() => handleSort("profitToIcon")}
-                >
-                  {sortBy?.profitToIcon === "asc" && <>&#10004;</>}🔥
-                </button>
-              </div>
-            </div>
-            <div className="my-2 flex gap-1">
-              <Input
-                placeholder="Search by name"
-                value={searchTerm}
-                onChange={handleSearch}
-              />
-            </div>
-          </>
-        )}
+            </AccordionContent>
+          </AccordionItem>
+          <AccordionItem value="item-2">
+            <AccordionTrigger className="py-1">
+              <p className="text-xs text-gray-400">Sort by & find</p>
+            </AccordionTrigger>
+            {
+              !!items?.length && (
+                <AccordionContent className="pb-2">
+                  <>
+                    <div className="flex flex-wrap gap-2">
+                      <div className="">
+                        <button
+                          className=" px-2 text-sm bg-blue-200 rounded"
+                          onClick={() => handleSort("name")}
+                        >
+                          Name{" "}
+                          {sortBy?.name == "desc" && (
+                            <span className="text-sm">&#9650;</span>
+                          )}{" "}
+                          {sortBy?.name == "asc" && (
+                            <span className="text-sm">&#9660;</span>
+                          )}
+                        </button>
+                      </div>
+                      <div className="">
+                        <button
+                          className=" px-2 text-sm bg-blue-200 rounded"
+                          onClick={() => handleSort("profit")}
+                        >
+                          Profit{" "}
+                          {sortBy?.profit == "desc" && (
+                            <span className="text-sm">&#9650;</span>
+                          )}{" "}
+                          {sortBy?.profit == "asc" && (
+                            <span className="text-sm">&#9660;</span>
+                          )}
+                        </button>
+                      </div>
+                      <div className="">
+                        <button
+                          className=" px-2 text-sm bg-blue-200 rounded"
+                          onClick={() => handleSort("profitPercentage")}
+                        >
+                          Percentage{" "}
+                          {sortBy?.profitPercentage == "desc" && (
+                            <span className="text-sm">&#9650;</span>
+                          )}{" "}
+                          {sortBy?.profitPercentage == "asc" && (
+                            <span className="text-sm">&#9660;</span>
+                          )}
+                        </button>
+                      </div>
+                      <div className="">
+                        <button
+                          className=" px-2 text-sm bg-blue-200 rounded"
+                          onClick={() => handleSort("total_invested")}
+                        >
+                          Total invested
+                          {sortBy?.total_invested == "desc" && (
+                            <span className="text-sm">&#9650;</span>
+                          )}
+                          {sortBy?.total_invested == "asc" && (
+                            <span className="text-sm">&#9660;</span>
+                          )}
+                        </button>
+                      </div>
+                      <div className="">
+                        <button
+                          className=" px-2 text-sm bg-blue-200 rounded"
+                          onClick={() => handleSort("estVal")}
+                        >
+                          Estimated value
+                          {sortBy?.estVal == "desc" && (
+                            <span className="text-sm">&#9650;</span>
+                          )}
+                          {sortBy?.estVal == "asc" && (
+                            <span className="text-sm">&#9660;</span>
+                          )}
+                        </button>
+                      </div>
+                      <div className="">
+                        <abbr title={`Trading: ${items.length - blankCoins} coins`}>
+                          <button
+                            className=" px-2 text-sm bg-blue-200 rounded"
+                            onClick={() => handleHideBlank()}
+                          >
+                            <span>{hideBlankCoins && <>&#10004;</>} Hide {blankCoins} blank</span>
+                          </button>
+                        </abbr>
+                      </div>
+                      <div className="">
+                        <button
+                          className=" px-2 text-sm bg-blue-200 rounded"
+                          onClick={() => handleSort("profitToIcon")}
+                        >
+                          {sortBy?.profitToIcon === "asc" && <>&#10004;</>}🔥
+                        </button>
+                      </div>
+                    </div>
+                    <div className="mt-2 flex gap-1 relative">
+                      <Input
+                        placeholder="Search by name"
+                        value={searchTerm}
+                        onChange={(e) => handleSearch(e?.target?.value)}
+                      />
+                      {
+                        !!searchTerm && (
+                          <button
+                            className="w-5 h-5 rounded-full text-sm bg-red-200 grid place-items-center absolute right-2 top-1/2 -translate-y-1/2"
+                            onClick={() => handleSearch("")}    
+                          >
+                            &#10008;
+                          </button>
+                        )
+                      }
+                    </div>
+                  </>
+                </AccordionContent>
+              )
+            }
+          </AccordionItem>
+        </Accordion>
         <div className="list">
           <div className="w-full">
             {dashboardItems?.map((coin: any) => (
