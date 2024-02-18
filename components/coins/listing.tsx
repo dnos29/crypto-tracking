@@ -127,7 +127,7 @@ export const CoinListing = (props: ICoinListingProps) => {
         </span>
       </p>
       <div className="mt-2">
-        <Accordion type="single" collapsible>
+        <Accordion type="single" defaultValue="item-2" collapsible>
           <AccordionItem value="item-1">
             <AccordionTrigger className="py-1">
               <p className="text-xs text-gray-400">Assets</p>
