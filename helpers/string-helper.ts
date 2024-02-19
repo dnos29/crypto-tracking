@@ -73,3 +73,7 @@ export const checkByCondition = (condition: string, coin: ICoinDashboard): boole
   }
   return false;
 }
+
+export const convertToCmcLink = (cmc_name: string) => {
+  return `https://coinmarketcap.com/currencies/${String(cmc_name).toLowerCase().replaceAll(' ', '-').replaceAll(/[\(|\)]/g, '')}`;
+}

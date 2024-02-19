@@ -8,7 +8,7 @@ import { UploadCoinModal } from "./upload-coin-modal";
 import { UploadTransactionModal } from "@/app/crypto/[id]/upload-transaction-modal";
 import { useEffect, useState } from "react";
 import { Input } from "../ui/input";
-import { profitToTextColor } from "@/helpers/string-helper";
+import { convertToCmcLink, profitToTextColor } from "@/helpers/string-helper";
 import { DeleteAllCoinModal } from "./delete-all-coin-modal";
 import { sortCoinsByKey } from "@/helpers/calculater-helper";
 import { PROFIT_THRESHOLD } from "@/shared/constants";
@@ -132,7 +132,7 @@ export const CoinListing = (props: ICoinListingProps) => {
             <AccordionTrigger className="py-1">
               <p className="text-xs text-gray-400">Assets</p>
             </AccordionTrigger>
-            <AccordionContent className="pb-2">
+            <AccordionContent className="pb-2 px-1">
               <div className="flex flex-wrap gap-2">
                 <div>
                   <CoinModal userid={userid || ""} />
@@ -159,7 +159,7 @@ export const CoinListing = (props: ICoinListingProps) => {
             </AccordionTrigger>
             {
               !!items?.length && (
-                <AccordionContent className="pb-2">
+                <AccordionContent className="pb-2 px-1">
                   <>
                     <div className="flex flex-wrap gap-2">
                       <div className="">
@@ -286,7 +286,7 @@ export const CoinListing = (props: ICoinListingProps) => {
                   <div className="text-sm flex gap-1 items-center font-medium">
                     <div>
                       <Link
-                        href={`https://coinmarketcap.com/currencies/${coin.cmc_name}`}
+                        href={convertToCmcLink(coin.cmc_name)}
                         target="_blank"
                         rel="noopener noreferrer"
                       >
