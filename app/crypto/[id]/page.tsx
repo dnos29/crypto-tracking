@@ -2,7 +2,7 @@ import { formatDate } from "@/helpers/time-helper";
 import supabase from "@/utils/supabase"
 import { currentUser } from '@clerk/nextjs'
 import Link from "next/link";
-import { ITransaction, ETransactionType } from '../../../interfaces';
+import { ITransaction, ETransactionType, TPlatformColor } from '../../../interfaces';
 import { TransactionModal } from "./transaction-modal";
 import { DeleteTransactionModal } from "./delete-transaction-modal";
 import { formatNumber } from "@/helpers/number-helper";
@@ -104,6 +104,11 @@ export default async function Page({ params }: { params: { id: string } }) {
           </div>
         </div>
       </div>
+      <p className="hidden">
+        <span className="bg-yellow-500">B</span>
+        <span className="bg-slate-500">O</span>
+        <span className="bg-blue-500">M</span>
+      </p>
       <div className="list">
         <div className='w-full'>
           {
@@ -116,7 +121,7 @@ export default async function Page({ params }: { params: { id: string } }) {
                     {tnx.type}
                   </span>
                   <span className={
-                    `py-px px-1 rounded-sm inline-block capitalize text-xs bg-opacity-50 font-medium bg-slate-500 ml-2 text-white`}>
+                    `py-px px-1 rounded-sm inline-block capitalize text-xs bg-opacity-50 font-medium ${TPlatformColor[tnx.platform]} ml-2 text-white`}>
                     {tnx.platform.charAt(0)}
                   </span>
                   <span className="text-xs text-gray-400 ml-2">{formatDate(tnx.tnx_date)}</span>
@@ -143,20 +148,6 @@ export default async function Page({ params }: { params: { id: string } }) {
                   </div>
                 </div>
               </div>
-              // <div key={tnx.id} className={`flex items-center text-sm mb-2 p-2 rounded ${tnx.type === ETransactionType.SELL ? 'bg-pink-100' : 'bg-teal-50'}`}>
-              //   <div className='w-32'>{formatDate(tnx.tnx_date)}</div>
-              //   <div className={`w-10 capitalize ${tnx.type === ETransactionType.BUY ? 'text-teal-500' : 'text-red-500'}`}>{tnx.type}</div>
-              //   <div className='w-1/4 text-right'>{tnx.amount}</div>
-              //   <div className='w-1/4 text-right'>{tnx.price_at}</div>
-              //   <div className='w-20 text-right'>
-              //     <span className={`capitalize text-white rounded p-1 ${TPlatformColor[tnx.platform]}`}>{tnx.platform.charAt(0)}</span>
-              //   </div>
-              //   <div className="w-24 text-right">
-
-              //     <CryptoModal coin={coin} transactions={transactions || []} isOpen={false} transaction={tnx} />
-              //     <CryptoDeleteModal id={tnx?.id || -1} coin={coin} transactions={transactions} />
-              //   </div>
-              // </div>
             )
             )
           }
