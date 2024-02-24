@@ -24,11 +24,13 @@ export const divide = (dividend: string | number, divisor: string | number): num
 export const averageCoinPrice = (coin: ICoin, transactions: ITransaction[]): ICoin => {
   const total_amount = transactions.reduce((acc, transaction) => acc + transaction.amount, 0);
   const total_invested = transactions.reduce((acc, transaction) => acc + transaction.total, 0);
+  const platforms = Array.from(new Set(transactions.map(tnx => tnx.platform))).join(',');
   return {
     ...coin,
     total_amount,
     total_invested,
     avg_price: total_invested / total_amount,
+    platforms,
   };
 }
 

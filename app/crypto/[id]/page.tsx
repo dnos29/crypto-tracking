@@ -114,7 +114,7 @@ export default async function Page({ params }: { params: { id: string } }) {
           {
             transactions?.map((tnx: ITransaction) =>
             (
-              <div key={tnx?.id} className="border-b-2 border-slate-100">
+              <div key={tnx?.id} data-tnx-id={tnx?.id} className="border-b-2 border-slate-100">
                 <div className="flex align-items-center mt-2 items-center">
                   <span className={
                     `py-px px-2 rounded-sm inline-block capitalize text-xs bg-opacity-50 font-medium ${tnx.type === ETransactionType.BUY ? 'bg-teal-200 text-teal-500' : 'bg-red-200 text-red-500'}`}>
@@ -126,7 +126,7 @@ export default async function Page({ params }: { params: { id: string } }) {
                   </span>
                   <span className="text-xs text-gray-400 ml-2">{formatDate(tnx.tnx_date)}</span>
                 </div>
-                <div className="flex items-center text-sm p-2 rounded space">
+                <div className="flex items-center text-sm pt-2 rounded space">
                   <div className='w-1/3'>
                     <p className="text-gray-400 text-xs">Amount</p>
                     <p className="">{formatNumber(tnx.amount)}</p>
@@ -147,6 +147,7 @@ export default async function Page({ params }: { params: { id: string } }) {
                     </div>
                   </div>
                 </div>
+                <div className="text-xs text-gray-400 italic pb-1">{tnx?.note}</div>
               </div>
             )
             )

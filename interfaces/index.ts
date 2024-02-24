@@ -14,6 +14,7 @@ export interface ITransaction {
   coin: number,
   cmc_id: number,
   userid: string,
+  note?: string,
 }
 export interface ITransactionCsv {
   coin: string,
@@ -22,6 +23,7 @@ export interface ITransactionCsv {
   tnx_date: string,
   amount: string,
   price_at: string,
+  note?: string,
 }
 
 export interface ICoinCsv {
@@ -41,6 +43,8 @@ export interface ICoin {
   avg_price: number,
   total_invested: number,
   userid: string,
+  platforms?: string,
+  note?: string,
 }
 
 export interface ITransactionCoin extends Omit<ITransaction, 'coin'>{

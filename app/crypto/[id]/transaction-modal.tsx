@@ -28,6 +28,7 @@ const transactionSchema = z.object({
   amount: z.string(),
   price_at: z.string(),
   total: z.string(),
+  note: z.string(),
 });
 interface ITransactionModalProps {
   coin: ICoin,
@@ -49,6 +50,7 @@ export const TransactionModal = (props: ITransactionModalProps) => {
       amount: initialAmountInput(transaction?.type, transaction?.amount),
       price_at: transaction?.price_at.toString() || '',
       total: initialAmountInput(transaction?.type, transaction?.total),
+      note: transaction?.note || '',
     }
   })
   const onSubmit = async (values: z.infer<typeof transactionSchema>) => {
@@ -67,6 +69,7 @@ export const TransactionModal = (props: ITransactionModalProps) => {
       coin: coin.id || 0,
       cmc_id: coin?.cmc_id,
       userid: coin.userid || '',
+      note: values?.note || '',
       ...(transaction?.id && { id: transaction?.id }),
     }
     if(values.type === ETransactionType.SELL){
@@ -282,6 +285,19 @@ export const TransactionModal = (props: ITransactionModalProps) => {
                           </SelectItem>
                         </SelectContent>
                       </Select>
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="note"
+                  render={({ field }) => (
+                    <FormItem className="mt-2">
+                      <FormLabel>Note</FormLabel>
+                      <FormControl>
+                        <Input placeholder="Enter note" {...field} />
+                      </FormControl>
+                      <FormMessage />
                     </FormItem>
                   )}
                 />

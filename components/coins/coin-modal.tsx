@@ -33,6 +33,7 @@ const coinSchema = z.object({
   total_amount: z.string().min(1),
   avg_price: z.string().min(1),
   total_invested: z.string().min(1),
+  note: z.string(),
 });
 
 interface ICoinModalProps {
@@ -47,12 +48,13 @@ export const CoinModal = (props: ICoinModalProps) => {
   const form = useForm<z.infer<typeof coinSchema>>({
     resolver: zodResolver(coinSchema),
     defaultValues: {
-      name: coin?.name || "",
-      cmc_name: coin?.cmc_name || "",
+      name: coin?.name || '',
+      cmc_name: coin?.cmc_name || '',
       cmc_id: coin?.cmc_id || 0,
-      total_amount: coin?.total_amount?.toString() || "",
-      avg_price: coin?.avg_price?.toString() || "",
-      total_invested: coin?.total_invested?.toString() || "",
+      total_amount: coin?.total_amount?.toString() || '',
+      avg_price: coin?.avg_price?.toString() || '',
+      total_invested: coin?.total_invested?.toString() || '',
+      note: coin?.note || '',
     },
   });
   const suggestCmcName = async (coin_name: string) => {
@@ -84,6 +86,7 @@ export const CoinModal = (props: ICoinModalProps) => {
       total_invested: Number(values.total_invested || 0),
       total_amount: Number(values.total_amount || 0),
       avg_price: Number(values.avg_price || 0),
+      note: values.note,
     };
     if (coin?.id) {
       // update
@@ -320,6 +323,22 @@ export const CoinModal = (props: ICoinModalProps) => {
                             placeholder="Enter average price"
                             {...field}
                             disabled
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="note"
+                    render={({ field }) => (
+                      <FormItem className="mt-2">
+                        <FormLabel>Note</FormLabel>
+                        <FormControl>
+                          <Input
+                            placeholder="Enter note"
+                            {...field}
                           />
                         </FormControl>
                         <FormMessage />

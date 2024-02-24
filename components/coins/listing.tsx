@@ -1,5 +1,5 @@
 "use client";
-import { ICoinDashboard } from "@/interfaces";
+import { EPlatform, ICoinDashboard } from "@/interfaces";
 import { CoinModal } from "./coin-modal";
 import { formatNumber } from "@/helpers/number-helper";
 import Link from "next/link";
@@ -13,6 +13,7 @@ import { DeleteAllCoinModal } from "./delete-all-coin-modal";
 import { sortCoinsByKey } from "@/helpers/calculater-helper";
 import { PROFIT_THRESHOLD } from "@/shared/constants";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "../ui/accordion";
+import { PlatformItem } from "./platform-items";
 
 interface ICoinListingProps {
   userid?: string;
@@ -280,7 +281,7 @@ export const CoinListing = (props: ICoinListingProps) => {
         </Accordion>
         <div className="list">
           <div className="w-full">
-            {dashboardItems?.map((coin: any) => (
+            {dashboardItems?.map((coin: any, idx: number) => (
               <div key={coin.id} className="border-b-2 border-slate-100 mt-2">
                 <div className="flex justify-between">
                   <div className="text-sm flex gap-1 items-center font-medium">
@@ -295,8 +296,15 @@ export const CoinListing = (props: ICoinListingProps) => {
                     </div>
                     <div>{coin.profitToIcon}</div>
                   </div>
+                  <div className="platforms">
+                    {coin?.platforms?.split(',').map((platform: EPlatform) => (
+                      <PlatformItem platform={platform} key={platform} />
+                    ))}
+                  </div>
                 </div>
-                <p className="text-xs text-gray-400">{coin.cmc_name}</p>
+                <p className="text-xs text-gray-400">
+                  {idx + 1}. {coin.cmc_name}
+                </p>
                 <div className="flex text-sm rounded pb-2">
                   <Link
                     href={`/crypto/${coin.id}`}
