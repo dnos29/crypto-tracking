@@ -17,5 +17,5 @@ export const formatDate = (date: string | Date, format = DATE_FORMAT.YYYY_MM_DD_
 }
 
 export const convertDateToDateTimeLocal = (date: string | Date): string => {
-  return dayjs(date).format('YYYY-MM-DDThh:mm');
+  return dayjs(date).format('YYYY-MM-DDTHH:mm');
 }
