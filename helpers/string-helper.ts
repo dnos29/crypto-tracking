@@ -75,5 +75,10 @@ export const checkByCondition = (condition: string, coin: ICoinDashboard): boole
 }
 
 export const convertToCmcLink = (cmc_name: string) => {
-  return `https://coinmarketcap.com/currencies/${String(cmc_name).toLowerCase().replaceAll(' ', '-').replaceAll(/[\(|\)]/g, '')}`;
+  const cmcNameSlug = String(cmc_name)
+    .toLowerCase()
+    .replaceAll(' ', '-')
+    .replaceAll(/[\(|\)]/g, '')
+    .replaceAll('.', '-');
+  return `https://coinmarketcap.com/currencies/${cmcNameSlug}`;
 }
