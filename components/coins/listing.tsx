@@ -8,7 +8,7 @@ import { UploadCoinModal } from "./upload-coin-modal";
 import { UploadTransactionModal } from "@/app/crypto/[id]/upload-transaction-modal";
 import { useEffect, useState } from "react";
 import { Input } from "../ui/input";
-import { convertToCmcLink, profitToTextColor } from "@/helpers/string-helper";
+import { platformLink, profitToTextColor } from "@/helpers/string-helper";
 import { DeleteAllCoinModal } from "./delete-all-coin-modal";
 import { sortCoinsByKey } from "@/helpers/calculater-helper";
 import { PROFIT_THRESHOLD } from "@/shared/constants";
@@ -287,7 +287,7 @@ export const CoinListing = (props: ICoinListingProps) => {
                   <div className="text-sm flex gap-1 items-center font-medium">
                     <div>
                       <Link
-                        href={convertToCmcLink(coin.cmc_name)}
+                        href={platformLink(coin.cmc_symbol, coin.platforms)}
                         target="_blank"
                         rel="noopener noreferrer"
                       >

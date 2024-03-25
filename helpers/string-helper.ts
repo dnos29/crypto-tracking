@@ -82,3 +82,16 @@ export const convertToCmcLink = (cmc_name: string) => {
     .replaceAll('.', '-');
   return `https://coinmarketcap.com/currencies/${cmcNameSlug}`;
 }
+
+export const platformLink = (cmc_symbol: string, platform: EPlatform) => {
+  if(!platform){
+    return '';
+  }
+  if(platform.includes(EPlatform.Binance)){
+    return `https://www.binance.com/en/trade/${cmc_symbol.toUpperCase()}_USDT?type=spot`;
+  }else if(platform.includes(EPlatform.Mexc)) {
+    return `https://www.mexc.com/exchange/${cmc_symbol.toUpperCase()}_USDT`;
+  } else {
+    return `https://www.okx.com/trade-spot/${cmc_symbol.toLowerCase()}-usdt`;
+  }
+}

@@ -45,6 +45,7 @@ export interface ICoin {
   userid: string,
   platforms?: string,
   note?: string,
+  platform_link?: string,
 }
 
 export interface ITransactionCoin extends Omit<ITransaction, 'coin'>{

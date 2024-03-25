@@ -9,7 +9,7 @@ import { formatNumber } from "@/helpers/number-helper";
 import { UploadTransactionModal } from './upload-transaction-modal';
 import { DeleteAllTransactionModal } from "./delete-all-transaction";
 import { HeaderPage } from "@/components/header.page";
-import { convertToCmcLink } from "@/helpers/string-helper";
+import { platformLink } from "@/helpers/string-helper";
 export const revalidate = 0
 
 
@@ -43,7 +43,7 @@ export default async function Page({ params }: { params: { id: string } }) {
     <>
       <HeaderPage>
         <p className="text-center uppercase">
-          <Link href={convertToCmcLink(coin.cmc_name)} target="_blank" className="hover:text-teal-500">
+          <Link href={platformLink(coin.cmc_symbol, coin.platforms)} target="_blank" className="text-teal-500">
             {formatNumber(totalAmount, 2)} {coin.name}
           </Link>
           <br />
