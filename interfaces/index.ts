@@ -114,3 +114,19 @@ export interface IUser{
   noti_sell: string;
   percentage_profit_formula?: EPercentageProfitFormula;
 }
+
+export interface ITotalSnapShot{
+  est_value: number,
+  est_value_n_remain: number,
+  remain: number,
+  profit: number,
+  userid: string,
+  snapshot_date: string,
+}
+
+export interface IDataSet{
+  label?: string,
+  data: number[],
+  borderColor?: string,
+  backgroundColor?: string,
+}

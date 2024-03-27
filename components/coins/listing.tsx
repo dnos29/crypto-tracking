@@ -1,5 +1,5 @@
 "use client";
-import { EPlatform, ICoinDashboard } from "@/interfaces";
+import { EPlatform, ICoinDashboard, IDataSet } from "@/interfaces";
 import { CoinModal } from "./coin-modal";
 import { formatNumber } from "@/helpers/number-helper";
 import Link from "next/link";
@@ -14,12 +14,15 @@ import { sortCoinsByKey } from "@/helpers/calculater-helper";
 import { PROFIT_THRESHOLD } from "@/shared/constants";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "../ui/accordion";
 import { PlatformItem } from "./platform-items";
+import { LineChart } from "../charts/LineChart";
 
 interface ICoinListingProps {
   userid?: string;
   userEmail?: string;
   items?: ICoinDashboard[];
   initialFund: number;
+  labels?: string[],
+  datasets?: IDataSet[],
 }
 
 const SORT_BY_KEY = 'sortBy';
@@ -45,7 +48,7 @@ export const CoinListing = (props: ICoinListingProps) => {
   const [savedHideBlankCoins, setSavedHideBlankCoins] = useState(hideBlankCoinLocal);
   const [hideBlankCoins, setHideBlankCoins] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
-  const { userid, userEmail, items, initialFund } = props;
+  const { userid, userEmail, items, initialFund, labels, datasets } = props;
   const [dashboardItems, setDashboardItems] = useState(items || []);
   const totalProfitVal =
     items?.reduce((acc, coin) => acc + coin.profit, 0) || 0;
@@ -129,6 +132,16 @@ export const CoinListing = (props: ICoinListingProps) => {
       </p>
       <div className="mt-2">
         <Accordion type="single" defaultValue="item-2" collapsible>
+          <AccordionItem value="item-0">
+            <AccordionTrigger className="py-1">
+              <p className="text-xs text-gray-400">Chart</p>
+            </AccordionTrigger>
+            <AccordionContent className="pb-2 px-1">
+              <div>
+                <LineChart labels={labels} datasets={datasets} />
+              </div>
+            </AccordionContent>
+          </AccordionItem>
           <AccordionItem value="item-1">
             <AccordionTrigger className="py-1">
               <p className="text-xs text-gray-400">Assets</p>

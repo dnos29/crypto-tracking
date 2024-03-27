@@ -19,3 +19,18 @@ export const formatDate = (date: string | Date, format = DATE_FORMAT.YYYY_MM_DD_
 export const convertDateToDateTimeLocal = (date: string | Date): string => {
   return dayjs(date).format('YYYY-MM-DDTHH:mm');
 }
+
+export const dateRange = (startDate: Date, range = -30): string[] => {
+  const dates: string[] = [];
+  let i = 0;
+  const date = dayjs(startDate);
+  while(i < Math.abs(range)){
+    if(range < 0){
+      dates.push(date.add(-i, 'day').format('YYYY-MM-DD'));
+    }else{
+      dates.push(date.add(i, 'day').format('YYYY-MM-DD'));
+    }
+    i++;
+  }
+  return dates.reverse();
+}

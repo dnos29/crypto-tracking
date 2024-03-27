@@ -5,6 +5,9 @@ import { CoinListing } from '@/components/coins/listing';
 import { ICoinDashboard, IUser } from '@/interfaces';
 import { profitToIcon } from '@/helpers/string-helper';
 import { percentageProfit } from '@/helpers/calculater-helper';
+import { dateRange } from '@/helpers/time-helper';
+import dayjs from 'dayjs';
+import { getDataSet } from '@/helpers/number-helper';
 
 const PROFIT_THRESHOLD = 1;
 export default async function Home() {
@@ -44,12 +47,29 @@ export default async function Home() {
       profitToIcon: profitToIcon(user?.noti_sell, coinDashboard),
     } as ICoinDashboard;
   }) || [];
+
+  const {data: totalSnapshots} = await supabase.from('total_snapshots')
+    .select()
+    .eq('userid', clerkUser?.id)
+    .lte('created_at', new Date().toISOString())
+    .gte('created_at', dayjs().add(-30, 'day').toISOString())
+    .order('snapshot_date', { ascending: false });
+
+  const labels = dateRange(dayjs().add(-1, 'day').toDate());
+  const estValDataset = getDataSet(labels, totalSnapshots || [], 'est_value');
+  const estValNRemainDataset = getDataSet(labels, totalSnapshots || [], 'est_value_n_remain');
+
   return (
     <CoinListing
       userid={clerkUser?.id}
       items={items}
       initialFund={user?.initial_fund || 0}
       userEmail={clerkUser?.emailAddresses?.[0]?.emailAddress}
+      labels={labels}
+      datasets={[
+        {data: estValDataset, label: 'Est value'},
+        {data: estValNRemainDataset, label: 'Est value + remain'}
+      ]}
     />
   )
 }
