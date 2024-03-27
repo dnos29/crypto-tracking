@@ -1,4 +1,4 @@
-import { ITotalSnapShot } from "@/interfaces";
+import { ICoinSnapShot, ITotalSnapShot } from "@/interfaces";
 
 export function formatNumber(num: number, defaulDigits = 6){
   let digits = defaulDigits;
@@ -13,14 +13,21 @@ export function formatNumber(num: number, defaulDigits = 6){
   return new Intl.NumberFormat('en-US', {maximumFractionDigits: digits}).format(Number(fixedNumber));
 }
 
-export const getDataSet = (dates: string[], snapshots: ITotalSnapShot[], field: keyof ITotalSnapShot) => {
+export const getDataSet = <T>(
+  dates: string[],
+  snapshots: T[],
+  keyField: keyof T,
+  valField: keyof T,
+) => {
   if(!snapshots) return [];
-  const mapSnapshots = new Map(snapshots?.map(snapshot => [snapshot.snapshot_date, snapshot?.[field]]));
+  const mapSnapshots = new Map<string, number>(
+    snapshots?.map(snapshot => [snapshot?.[keyField] as string, snapshot?.[valField] as number])
+  );
   let i = 0;
   let dataSet = [];
   while(i < dates.length){
     dataSet.push(
-      Number(mapSnapshots.get(dates[i]) || 0)
+      Number(mapSnapshots.get(dates?.[i]) || 0)
     );
     i++;
   }

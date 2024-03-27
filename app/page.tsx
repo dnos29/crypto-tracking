@@ -56,8 +56,8 @@ export default async function Home() {
     .order('snapshot_date', { ascending: false });
 
   const labels = dateRange(dayjs().add(-1, 'day').toDate());
-  const estValDataset = getDataSet(labels, totalSnapshots || [], 'est_value');
-  const estValNRemainDataset = getDataSet(labels, totalSnapshots || [], 'est_value_n_remain');
+  const estValDataset = getDataSet(labels, totalSnapshots || [], 'snapshot_date', 'est_value');
+  const estValNRemainDataset = getDataSet(labels, totalSnapshots || [], 'snapshot_date', 'est_value_n_remain');
 
   return (
     <CoinListing

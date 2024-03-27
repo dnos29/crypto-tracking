@@ -33,11 +33,17 @@ export default async function handler(
     console.log(err);
   });
 
-
+  const snapshot_date = dayjs().format('YYYY-MM-DD');
   for (let idxUser = 0; idxUser < users.length; idxUser++) {
     const user = users[idxUser];
     const { data: coins } = await supabase.from('coins').select().eq('userid', user?.userid).order('name', { ascending: true });
-    const items: ICoinDashboard[] = coins?.map((coin) => {
+    const items: ICoinDashboard[] = [];
+    const coinSnapshotItems = [];
+    if(!coins?.length){
+      continue;
+    }
+    for (let i = 0; i < coins?.length; i++) {
+      const coin = coins?.[i];
       const marketPrice = marketQuote?.[coin.cmc_id.toString()]?.quote?.USD?.price;
       const estVal = marketPrice * (coin.total_amount || 0);
       const total_invested = coin.total_invested > PROFIT_THRESHOLD ? coin.total_invested : 0;
@@ -54,17 +60,31 @@ export default async function handler(
         profit,
         profitPercentage,
       }
-      return {
+      items.push({
         ...coinDashboard,
-      } as ICoinDashboard;
-    }) || [];
+      });
+      coinSnapshotItems.push({
+        coin_id: coin.id,
+        cmc_id: coin.cmc_id,
+        cmc_name: coin.cmc_name,
+        total_amount: coin.total_amount,
+        avg_price: coin.avg_price,
+        total_invested: coin.total_invested,
+        userid: user?.userid,
+        market_price: marketPrice,
+        est_val: estVal,
+        profit_percentage: profitPercentage,
+        profit: estVal - total_invested,
+        snapshot_date,
+        updated_at: new Date().toISOString(),
+      })
+    }
 
     const est_value = items?.reduce((acc, coin) => acc + coin.estVal, 0) || 0;
     const profit = items?.reduce((acc, coin) => acc + coin.profit, 0) || 0;
     const invested = items?.reduce((acc, coin) => acc + coin.total_invested, 0) || 0;
     const remainUsdt = user.initial_fund - invested;
     const est_value_n_remain = est_value + remainUsdt;
-    const snapshot_date = dayjs().format('YYYY-MM-DD');
     
     const {data, error} = await supabase.from('total_snapshots')
     .upsert({
@@ -73,11 +93,20 @@ export default async function handler(
       profit,
       userid: user.userid,
       snapshot_date,
+      updated_at: new Date().toISOString(),
     }, {
       onConflict: 'userid, snapshot_date',
     });
     
     if (!!error) console.log(error);
+
+    const {data: coinSnapshotsData, error: coinSnapshotData} = await supabase.from('coin_snapshots')
+        .upsert(
+          coinSnapshotItems, 
+          {
+            onConflict: 'coin_id, userid, snapshot_date'
+          },
+        );
   }
   res.status(200).json({ message: 'snapshot cron done...' })
 }

@@ -1,15 +1,18 @@
-import { formatDate } from "@/helpers/time-helper";
+import { dateRange, formatDate } from "@/helpers/time-helper";
 import supabase from "@/utils/supabase"
 import { currentUser } from '@clerk/nextjs'
 import Link from "next/link";
 import { ITransaction, ETransactionType, TPlatformColor } from '../../../interfaces';
 import { TransactionModal } from "./transaction-modal";
 import { DeleteTransactionModal } from "./delete-transaction-modal";
-import { formatNumber } from "@/helpers/number-helper";
+import { formatNumber, getDataSet } from "@/helpers/number-helper";
 import { UploadTransactionModal } from './upload-transaction-modal';
 import { DeleteAllTransactionModal } from "./delete-all-transaction";
 import { HeaderPage } from "@/components/header.page";
 import { platformLink } from "@/helpers/string-helper";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+import { LineChart } from "@/components/charts/LineChart";
+import dayjs from "dayjs";
 export const revalidate = 0
 
 
@@ -39,6 +42,18 @@ export default async function Page({ params }: { params: { id: string } }) {
   const marketPrice = marketQuote?.[coin.cmc_id.toString()]?.quote?.USD?.price;
   const profit = totalAmount * marketPrice - totalInvested;
   const estVal = totalAmount * marketPrice;
+  const {data: coinSnapshots} = await supabase.from('coin_snapshots')
+    .select()
+    .eq('userid', user?.id)
+    .eq('coin_id', coin?.id)
+    .lte('created_at', new Date().toISOString())
+    .gte('created_at', dayjs().add(-30, 'day').toISOString())
+  const labels = dateRange(dayjs().add(-1, 'day').toDate());
+  const estvalDataset = getDataSet(labels, coinSnapshots || [], 'snapshot_date', 'est_val');
+  const marketPriceDataset = getDataSet(labels, coinSnapshots || [], 'snapshot_date', 'market_price');
+  const profitDataset = getDataSet(labels, coinSnapshots || [], 'snapshot_date', 'profit');
+  // const estValNRemainDataset = getDataSet(labels, totalSnapshots || [], 'est_value_n_remain');
+
   return (
     <>
       <HeaderPage>
@@ -84,6 +99,32 @@ export default async function Page({ params }: { params: { id: string } }) {
           </div>
         </div>
       </div>
+      <Accordion type="single" defaultValue="item-2" collapsible>
+        <AccordionItem value="item-0">
+          <AccordionTrigger className="py-1">
+            <p className="text-xs text-gray-400">Chart</p>
+          </AccordionTrigger>
+          <AccordionContent className="pb-2 px-1">
+            <div>
+              <LineChart labels={labels} datasets={[
+                {
+                  label: 'Est val',
+                  data: estvalDataset,
+                },
+                {
+                  label: 'Market price',
+                  data: marketPriceDataset,
+                  yAxisID: 'y1',
+                },
+                {
+                  label: 'Profit',
+                  data: profitDataset,
+                }
+              ]} />
+            </div>
+          </AccordionContent>
+        </AccordionItem>
+      </Accordion>
       <div className='mt-2'>
         <div className=''>
           <p className="text-xs text-gray-400">History</p>

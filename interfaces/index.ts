@@ -129,4 +129,21 @@ export interface IDataSet{
   data: number[],
   borderColor?: string,
   backgroundColor?: string,
+  yAxisID?: 'y' | 'y1',
+}
+
+export interface ICoinSnapShot{
+  coin_id: number,
+  cmc_id: number,
+  cmc_name: string,
+  total_amount: number,
+  avg_price: number,
+  total_invested: number,
+  userid: string,
+  market_price: number,
+  est_val: number,
+  profit_percentage: number,
+  profit: number,
+  updated_at: Date,
+  snapshot_date: string,
 }

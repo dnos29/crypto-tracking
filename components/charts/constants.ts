@@ -1,5 +1,20 @@
 export const options = {
   responsive: true,
+  scales: {
+    y: {
+      type: 'linear' as const,
+      display: true,
+      position: 'left' as const,
+    },
+    y1: {
+      type: 'linear' as const,
+      display: true,
+      position: 'right' as const,
+      grid: {
+        drawOnChartArea: false,
+      },
+    },
+  },
   plugins: {
     legend: {
       position: 'bottom' as const,
