@@ -12,6 +12,10 @@ export const DATE_FORMAT = {
 
 export const DEFAULT_TIMEZONE = 'Asia/Ho_Chi_Minh';
 
+export const getDefaultTime = (date?: string | Date): dayjs.Dayjs => {
+  return dayjs(date).tz(DEFAULT_TIMEZONE);
+}
+
 export const formatDate = (date: string | Date, format = DATE_FORMAT.YYYY_MM_DD_hh_ss) => {
   return dayjs(date).tz(DEFAULT_TIMEZONE).format(format);
 }
@@ -23,7 +27,7 @@ export const convertDateToDateTimeLocal = (date: string | Date): string => {
 export const dateRange = (startDate: Date, range = -30): string[] => {
   const dates: string[] = [];
   let i = 0;
-  const date = dayjs(startDate);
+  const date = getDefaultTime(startDate);
   while(i < Math.abs(range)){
     if(range < 0){
       dates.push(date.add(-i, 'day').format('YYYY-MM-DD'));

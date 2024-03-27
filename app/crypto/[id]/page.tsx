@@ -1,4 +1,4 @@
-import { dateRange, formatDate } from "@/helpers/time-helper";
+import { dateRange, formatDate, getDefaultTime } from "@/helpers/time-helper";
 import supabase from "@/utils/supabase"
 import { currentUser } from '@clerk/nextjs'
 import Link from "next/link";
@@ -46,9 +46,9 @@ export default async function Page({ params }: { params: { id: string } }) {
     .select()
     .eq('userid', user?.id)
     .eq('coin_id', coin?.id)
-    .lte('created_at', new Date().toISOString())
-    .gte('created_at', dayjs().add(-30, 'day').toISOString())
-  const labels = dateRange(dayjs().add(-1, 'day').toDate());
+    .lte('created_at', getDefaultTime())
+    .gte('created_at', getDefaultTime().add(-30, 'day').toISOString())
+  const labels = dateRange(getDefaultTime().add(-1, 'day').toDate());
   const estvalDataset = getDataSet(labels, coinSnapshots || [], 'snapshot_date', 'est_val');
   const marketPriceDataset = getDataSet(labels, coinSnapshots || [], 'snapshot_date', 'market_price');
   const profitDataset = getDataSet(labels, coinSnapshots || [], 'snapshot_date', 'profit');

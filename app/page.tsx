@@ -5,7 +5,7 @@ import { CoinListing } from '@/components/coins/listing';
 import { ICoinDashboard, IUser } from '@/interfaces';
 import { profitToIcon } from '@/helpers/string-helper';
 import { percentageProfit } from '@/helpers/calculater-helper';
-import { dateRange } from '@/helpers/time-helper';
+import { dateRange, getDefaultTime } from '@/helpers/time-helper';
 import dayjs from 'dayjs';
 import { getDataSet } from '@/helpers/number-helper';
 
@@ -51,11 +51,11 @@ export default async function Home() {
   const {data: totalSnapshots} = await supabase.from('total_snapshots')
     .select()
     .eq('userid', clerkUser?.id)
-    .lte('created_at', new Date().toISOString())
-    .gte('created_at', dayjs().add(-30, 'day').toISOString())
+    .lte('created_at', getDefaultTime().toISOString())
+    .gte('created_at', getDefaultTime().add(-30, 'day').toISOString())
     .order('snapshot_date', { ascending: false });
 
-  const labels = dateRange(dayjs().add(-1, 'day').toDate());
+  const labels = dateRange(getDefaultTime().add(-1, 'day').toDate());
   const estValDataset = getDataSet(labels, totalSnapshots || [], 'snapshot_date', 'est_value');
   const estValNRemainDataset = getDataSet(labels, totalSnapshots || [], 'snapshot_date', 'est_value_n_remain');
 
