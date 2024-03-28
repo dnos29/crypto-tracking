@@ -1,5 +1,9 @@
 export const options = {
   responsive: true,
+  interaction: {
+    intersect: false,
+    mode: 'index',
+  },
   scales: {
     y: {
       type: 'linear' as const,

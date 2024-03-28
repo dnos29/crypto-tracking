@@ -13,7 +13,6 @@ import {
   Legend,
 } from "chart.js";
 import { Line } from "react-chartjs-2";
-import { options } from "./constants";
 import { colorDataset } from "./color-helper";
 
 // Register ChartJS components using ChartJS.register
@@ -40,11 +39,46 @@ export const LineChart = (props: ILineChartProps) => {
   return (
     <div>
       <Line
-        options={options}
         data={{
           labels,
           datasets: colorDataset(datasets),
         }}
+        options={
+          {
+            responsive: true,
+            interaction: {
+              intersect: false,
+              mode: 'index',
+            },
+            scales: {
+              y: {
+                type: 'linear' as const,
+                display: true,
+                position: 'left' as const,
+              },
+              y1: {
+                type: 'linear' as const,
+                display: true,
+                position: 'right' as const,
+                grid: {
+                  drawOnChartArea: false,
+                },
+              },
+            },
+            plugins: {
+              legend: {
+                position: 'bottom' as const,
+              },
+              title: {
+                display: false,
+                text: 'Line Chart',
+              },
+              tooltip: {
+                intersect: false
+              },
+            },
+          }
+        }
       />
     </div>
   )
