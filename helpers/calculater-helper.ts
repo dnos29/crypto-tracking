@@ -34,7 +34,7 @@ export const averageCoinPrice = (coin: ICoin, transactions: ITransaction[]): ICo
   };
 }
 
-export const initialAmountInput = (tnx_type = ETransactionType.BUY, amount = 0): string => {
+export const initialAmountInput = (tnx_type = ETransactionType.BUY, amount?: number): string => {
   if(amount === undefined){
     return '';
   }

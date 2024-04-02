@@ -1,5 +1,5 @@
 "use client";
-import { ICmcMap, ICoin } from "@/interfaces";
+import { EPlatform, ICmcMap, ICoin } from "@/interfaces";
 import {
   Dialog,
   DialogContent,
@@ -25,6 +25,8 @@ import supabase from "@/utils/supabase";
 import { useRouter } from "next/navigation";
 import { divide } from "@/helpers/calculater-helper";
 import { findCmcMap } from "@/helpers/validator.helper";
+import { Checkbox } from "../ui/checkbox";
+import { addPlatform, removePlatform } from "@/helpers/string-helper";
 
 const coinSchema = z.object({
   name: z.string().toUpperCase().min(1),
@@ -34,6 +36,7 @@ const coinSchema = z.object({
   avg_price: z.string().min(1),
   total_invested: z.string().min(1),
   note: z.string(),
+  platforms: z.string(),
 });
 
 interface ICoinModalProps {
@@ -55,6 +58,7 @@ export const CoinModal = (props: ICoinModalProps) => {
       avg_price: coin?.avg_price?.toString() || '',
       total_invested: coin?.total_invested?.toString() || '',
       note: coin?.note || '',
+      platforms: coin?.platforms || '',
     },
   });
   const suggestCmcName = async (coin_name: string) => {
@@ -87,7 +91,9 @@ export const CoinModal = (props: ICoinModalProps) => {
       total_amount: Number(values.total_amount || 0),
       avg_price: Number(values.avg_price || 0),
       note: values.note,
+      platforms: values.platforms,
     };
+    console.log("newCoins", newCoin);
     if (coin?.id) {
       // update
       try {
@@ -331,6 +337,43 @@ export const CoinModal = (props: ICoinModalProps) => {
                   />
                   <FormField
                     control={form.control}
+                    name="platforms"
+                    render={({ field }) => (
+                      <FormItem className="mt-2">
+                        <FormLabel>Platforms</FormLabel>
+                        <FormControl>
+                          <div className="flex gap-4">
+                            {
+                              (Object.keys(EPlatform) as Array<keyof typeof EPlatform>).map(platformKey => (
+                                <div>
+                                  <div className="flex items-center">
+                                    <Checkbox
+                                      id={EPlatform[platformKey]}
+                                      checked={field.value.includes(EPlatform?.[platformKey])}
+                                      onCheckedChange={(isChecked) => {
+                                        let platforms = form.getValues('platforms');
+                                        if(isChecked){
+                                          form.setValue('platforms', addPlatform(EPlatform?.[platformKey], platforms));
+                                        } else {
+                                          form.setValue('platforms', removePlatform(EPlatform?.[platformKey], platforms));
+                                        }
+                                      }}
+                                    />
+                                    <label htmlFor={EPlatform[platformKey]} className="ml-1 text-sm capitalize">
+                                      {EPlatform[platformKey]}
+                                    </label>
+                                  </div>
+                                </div>
+                              ))
+                            }
+                          </div>
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
                     name="note"
                     render={({ field }) => (
                       <FormItem className="mt-2">
@@ -348,7 +391,7 @@ export const CoinModal = (props: ICoinModalProps) => {
                   <div className="mt-2">
                     <Button
                       type="submit"
-                      disabled={form.formState.isSubmitting}
+                      disabled={form.formState.isSubmitting || !form.formState.isValid}
                     >
                       Save
                     </Button>

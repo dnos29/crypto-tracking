@@ -84,11 +84,27 @@ export const convertToCmcLink = (cmc_name: string) => {
 }
 
 export const platformLink = (cmc_symbol: string, platform: EPlatform) => {
-  if(platform?.includes(EPlatform.Okx)){
-    return `https://www.okx.com/trade-spot/${cmc_symbol.toLowerCase()}-usdt`;
+  if(platform?.includes(EPlatform.Binance)){
+    return `https://www.binance.com/en/trade/${cmc_symbol.toUpperCase()}_USDT?type=spot`;
   }else if(platform?.includes(EPlatform.Mexc)) {
     return `https://www.mexc.com/exchange/${cmc_symbol.toUpperCase()}_USDT`;
+  } else if(platform?.includes(EPlatform.Okx)) {
+    return `https://www.okx.com/trade-spot/${cmc_symbol.toLowerCase()}-usdt`;
   } else {
     return `https://www.binance.com/en/trade/${cmc_symbol.toUpperCase()}_USDT?type=spot`;
   }
+}
+
+export const addPlatform = (platform: EPlatform, platforms: string): string => {
+  if(platforms?.includes(platform)){
+    return platforms;
+  }
+  return platforms?.split(',').concat([platform]).filter(i => i !== '').join(',');
+}
+
+export const removePlatform = (platform: EPlatform, platforms: string): string => {
+  if(platforms?.includes(platform)){
+    return platforms.split(',').filter(i => i !== platform).join(',');
+  }
+  return platforms;
 }
