@@ -345,7 +345,7 @@ export const CoinModal = (props: ICoinModalProps) => {
                           <div className="flex gap-4">
                             {
                               (Object.keys(EPlatform) as Array<keyof typeof EPlatform>).map(platformKey => (
-                                <div>
+                                <div key={platformKey}>
                                   <div className="flex items-center">
                                     <Checkbox
                                       id={EPlatform[platformKey]}
