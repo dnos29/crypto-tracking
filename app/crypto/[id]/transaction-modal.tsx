@@ -44,7 +44,7 @@ export const TransactionModal = (props: ITransactionModalProps) => {
   const form = useForm<z.infer<typeof transactionSchema>>({
     resolver: zodResolver(transactionSchema),
     defaultValues: {
-      platform: transaction?.platform || (transactions?.pop()?.platform || EPlatform.Okx),
+      platform: transaction?.platform || (transactions?.[transactions?.length - 1].platform || EPlatform.Okx),
       tnx_date: convertDateToDateTimeLocal(transaction?.tnx_date || new Date()),
       type: transaction?.type || ETransactionType.BUY,
       amount: initialAmountInput(transaction?.type, transaction?.amount),

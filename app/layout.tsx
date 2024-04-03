@@ -22,12 +22,10 @@ export default async function RootLayout({
     <ClerkProvider>
       <html lang="en">
         <body className={inter.className}>
-          <TanstackProvider>
-            <main className='max-w-2xl mx-auto my-0 pl-2 pr-4 py-4 relative'>
-              <Header clerkUser={clerkUser} />
-              {children}
-            </main>
-          </TanstackProvider>
+          <main className='max-w-2xl mx-auto my-0 pl-2 pr-4 py-4 relative'>
+            <Header clerkUser={clerkUser} />
+            {children}
+          </main>
         </body>
       </html>
     </ClerkProvider>
