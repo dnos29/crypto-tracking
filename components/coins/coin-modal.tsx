@@ -242,17 +242,17 @@ export const CoinModal = (props: ICoinModalProps) => {
                       </label>
                       <div className="flex flex-wrap gap-2">
                         {cmcMapSuggestions?.map((cmcMapSuggestion) => (
-                          <>
+                          <div key={cmcMapSuggestion.id}>
                             <label
                               className="px-2 bg-blue-200 rounded text-sm cursor-pointer"
                               onClick={() => {
                                 form.setValue("cmc_name", cmcMapSuggestion.name);
-                                form.setValue("cmc_id", cmcMapSuggestion.id);
+                                form.setValue("cmc_id", cmcMapSuggestioncmcMapSuggestion);
                               }}
                             >
                               {cmcMapSuggestion.id + '-' +cmcMapSuggestion.name}
                             </label>
-                          </>
+                          </div>
                         ))}
                       </div>
                     </div>

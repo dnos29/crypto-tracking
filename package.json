@@ -26,6 +26,7 @@
     "@tanstack/react-query-devtools": "^5.17.1",
     "@types/papaparse": "^5.3.14",
     "chart.js": "^4.4.2",
+    "class-transformer": "^0.5.1",
     "class-validator": "^0.14.0",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.0.0",

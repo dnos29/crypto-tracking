@@ -2,6 +2,7 @@ import { EPlatform, EValidateCsvType, IValidationResult } from "@/interfaces";
 import { ETransactionType, ICmcMap } from "@/interfaces";
 import { IsDateString, IsEnum, IsNotEmpty, IsNumber, IsNumberString, IsOptional, validateOrReject } from "class-validator";
 import CmcCryptoCurrencyMap from '../cmc-data/cmc-cryptocurrency-map.json';
+import { Transform } from 'class-transformer';
 
 class TransactionCsv{
   @IsNotEmpty()
@@ -25,10 +26,12 @@ class TransactionCsv{
   tnx_date?: string;
 
   @IsNotEmpty()
+  @Transform(({ value }) => Number(value).toFixed(30))
   @IsNumberString()
   amount: string;
 
   @IsNotEmpty()
+  @Transform(({ value }) => Number(value).toFixed(30))
   @IsNumberString()
   total: string;
 
@@ -76,8 +79,8 @@ class CoinCsv{
     this.cmc_name = params?.cmc_name;
     this.cmc_slug = params?.cmc_slug;
     this.cmc_symbol = params?.cmc_symbol;
-    this.total_invested = params?.total_invested || '0';
-    this.total_amount = params?.total_amount || '0';
+    this.total_invested = Number(params?.total_invested).toFixed(30) || '0';
+    this.total_amount =  Number(params?.total_amount).toFixed(30) || '0';
   }
 }
 
