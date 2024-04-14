@@ -247,7 +247,7 @@ export const CoinModal = (props: ICoinModalProps) => {
                               className="px-2 bg-blue-200 rounded text-sm cursor-pointer"
                               onClick={() => {
                                 form.setValue("cmc_name", cmcMapSuggestion.name);
-                                form.setValue("cmc_id", cmcMapSuggestioncmcMapSuggestion);
+                                form.setValue("cmc_id", cmcMapSuggestion.id);
                               }}
                             >
                               {cmcMapSuggestion.id + '-' +cmcMapSuggestion.name}
