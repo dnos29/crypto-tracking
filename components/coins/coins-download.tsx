@@ -14,7 +14,7 @@ export const CoinsDownload = (props: {userid: string}) => {
       const csvContent = 'data:text/csv;charset=utf-8,' +
         'cmc_id,cmc_name,cmc_symbol,cmc_slug,name,total_invested,total_amount,avg_price\n' +
         coins.map((coin: ICoin) => (
-          `${coin.cmc_id},${coin.cmc_name},${coin.cmc_symbol},${coin.cmc_slug},${coin.name},${coin.total_invested.toString()},${coin.total_amount.toString()},${coin.avg_price.toString()}`
+          `${coin.cmc_id},${coin.cmc_name},${coin.cmc_symbol},${coin.cmc_slug},${coin.name},${coin.total_invested.toString()},${coin.total_amount.toString()},${coin?.avg_price?.toString()}`
         )).join('\n');
         const encodeUri = encodeURI(csvContent);
         const link = document.createElement('a');

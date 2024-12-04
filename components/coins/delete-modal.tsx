@@ -17,6 +17,7 @@ export const CoinDeleteModal = (props: ICoinDeleteModalProps) => {
   const router = useRouter();
   const deleteTransaction = async ()=> {
     try {
+      await supabase.from('transactions').delete().eq('coin', id).eq('userid', userid);
       await supabase.from('coins').delete().eq('id', id).eq('userid', userid);
       router.refresh();
       setOpenModal(false);

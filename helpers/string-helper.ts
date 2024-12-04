@@ -108,3 +108,7 @@ export const removePlatform = (platform: EPlatform, platforms: string): string =
   }
   return platforms;
 }
+
+export const capitalize = (s: string) => {
+  return s && String(s[0]).toUpperCase() + String(s).slice(1);
+}
